@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function sendOTP(email: string) {
@@ -31,22 +32,34 @@ export async function sendOTP(email: string) {
 
 export async function verifyOTP(email: string, otp: string) {
   const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
+    where: { email },
   });
 
-  if (!user) {
-    return false;
-  }
+  if (!user) return false;
 
-  if (user.otp !== otp) {
-    return false;
-  }
+  if (user.otp !== otp) return false;
 
   if (!user.otpExpiry || user.otpExpiry < new Date()) {
     return false;
   }
 
-  return true;
+  const cookieStore = await cookies();
+
+  cookieStore.set("session", user.id, {
+    httpOnly: true,
+    secure: false,
+    path: "/",
+  });
+
+  redirect("/dashboard");
+}
+
+export async function logout() {
+  "use server";
+
+  const cookieStore = await cookies();
+
+  cookieStore.delete("session");
+
+  redirect("/");
 }

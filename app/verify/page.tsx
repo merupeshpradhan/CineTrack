@@ -1,5 +1,4 @@
 import { verifyOTP } from "@/actions/actions";
-import { redirect } from "next/navigation";
 
 export default async function VerifyPage({
   searchParams,
@@ -16,10 +15,6 @@ export default async function VerifyPage({
     const otp = formData.get("otp") as string;
 
     const result = await verifyOTP(email as string, otp);
-
-    if (result) {
-      redirect("/dashboard");
-    }
 
     console.log("OTP Valid:", result);
   }
