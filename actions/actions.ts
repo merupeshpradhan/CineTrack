@@ -111,3 +111,23 @@ export async function addMovie(formData: FormData) {
 
   redirect("/dashboard");
 }
+
+export async function deleteMovie(movieId: string) {
+  "use server";
+
+  const cookieStore = await cookies();
+
+  const session = cookieStore.get("session")?.value;
+
+  if (!session) {
+    redirect("/");
+  }
+
+  await prisma.movie.delete({
+    where: {
+      id: movieId,
+    },
+  });
+
+  redirect("/dashboard");
+}
