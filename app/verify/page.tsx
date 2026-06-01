@@ -1,4 +1,5 @@
 import { verifyOTP } from "@/actions/actions";
+import { redirect } from "next/navigation";
 
 export default async function VerifyPage({
   searchParams,
@@ -16,12 +17,18 @@ export default async function VerifyPage({
 
     const result = await verifyOTP(email as string, otp);
 
+    if (result) {
+      redirect("/dashboard");
+    }
+
     console.log("OTP Valid:", result);
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center">
       <form action={handleVerify} className="flex flex-col gap-4 w-80">
+        <h1 className="text-xl font-bold">Verify OTP</h1>
+
         <p>OTP sent to: {email}</p>
 
         <input
