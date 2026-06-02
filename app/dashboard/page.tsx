@@ -80,6 +80,7 @@ export default async function DashboardPage() {
               className="w-full h-60 object-cover rounded"
             />
             <WatchedCheckbox id={movie.id} watched={movie.watched} />
+            
             <h3 className="text-xl font-bold mt-3">{movie.title}</h3>
 
             <p>{movie.description}</p>
