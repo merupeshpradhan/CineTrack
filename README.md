@@ -49,7 +49,7 @@ CineTrack allows users to securely log in using Email OTP, manage their personal
 
 ## Movie Details Page
 
-![Add Movie]https://github.com/user-attachments/assets/70dff946-171a-4cee-881b-a184dc39a97f
+![Add Movie](https://github.com/user-attachments/assets/70dff946-171a-4cee-881b-a184dc39a97f
 )
 
 ---
