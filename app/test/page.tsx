@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export default async function TestPage() {
+  // Fetch all users to verify database connectivity
   const users = await prisma.user.findMany();
 
   return (

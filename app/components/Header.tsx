@@ -5,6 +5,7 @@ import { logout } from "@/actions/actions";
 export default function Header() {
   return (
     <header className="flex flex-row items-center justify-between gap-4 pb-6 border-b border-[#D8BFD8]/10">
+      {/* Application branding */}
       <div>
         <h1 className="text-xl sm:text-2xl font-black uppercase bg-gradient-to-r from-[#D3D3FF] via-[#ED80E9] to-[#9400D3] text-transparent bg-clip-text">
           CineTrack
@@ -14,6 +15,7 @@ export default function Header() {
         </p>
       </div>
 
+      {/* Dashboard actions */}
       <div className="flex gap-2">
         <a
           href="/dashboard/add-movie"

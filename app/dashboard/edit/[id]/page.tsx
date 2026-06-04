@@ -8,13 +8,14 @@ export default async function EditMoviePage({
 }) {
   const { id } = await params;
 
+  // Fetch movie by ID
   const movie = await prisma.movie.findUnique({
     where: {
       id,
     },
   });
-  
 
+  // Show fallback UI if movie does not exist
   if (!movie) {
     return (
       <div className="min-h-screen bg-[#110e1a] text-[#D3D3FF] flex items-center justify-center p-6">
@@ -24,7 +25,8 @@ export default async function EditMoviePage({
             Movie Not Found
           </h1>
           <p className="text-xs text-[#D3D3FF]/50 mt-2">
-            The database record you are trying to modify does not exist or has been dropped.
+            The database record you are trying to modify does not exist or has
+            been dropped.
           </p>
           <a
             href="/dashboard"
@@ -37,7 +39,7 @@ export default async function EditMoviePage({
     );
   }
 
-  // Convert Date objects to safe strings before passing down to the Client Component
+  // Serialize date values before passing them to the client component
   const serializedMovie = {
     ...movie,
     watchDate: movie.watchDate.toISOString().split("T")[0],

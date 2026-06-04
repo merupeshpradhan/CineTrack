@@ -22,7 +22,7 @@ const POSTERS_ROW_2 = [
   "/Movies/RRR.jpg",
 ];
 
-// Precise seamless wrapping helper
+// Seamless marquee wrapping helper
 const wrapX = (min: number, max: number, v: number) => {
   const rangeSize = max - min;
   return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
@@ -37,6 +37,7 @@ export default function VerifyPage({
   const resolvedParams = use(searchParams);
   const email = resolvedParams.email || "";
 
+  // OTP input state management
   const [otpValues, setOtpValues] = useState<string[]>(Array(6).fill(""));
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
@@ -48,6 +49,7 @@ export default function VerifyPage({
 
   const [isReady, setIsReady] = useState(false);
 
+  // Initialize marquee animation after DOM measurements are ready
   useEffect(() => {
     const timer = setTimeout(() => setIsReady(true), 50);
     return () => clearTimeout(timer);
@@ -58,7 +60,7 @@ export default function VerifyPage({
 
   const SPEED_COEFF = 0.06;
 
-  // Animation frame loop configured to run nonstop (hover states removed)
+  // Continuous background poster animation
   useAnimationFrame((time, delta) => {
     if (!isReady) return;
 
@@ -83,6 +85,7 @@ export default function VerifyPage({
     }
   });
 
+  // Handle OTP digit input and auto-focus next field
   const handleInputChange = (value: string, index: number) => {
     if (!/^[0-9]?$/.test(value)) return;
     const newValues = [...otpValues];
@@ -94,6 +97,7 @@ export default function VerifyPage({
     }
   };
 
+  // Navigate to previous field on backspace
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number,
@@ -103,6 +107,7 @@ export default function VerifyPage({
     }
   };
 
+  // Verify OTP and authenticate user
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const combinedOtp = otpValues.join("");
@@ -133,7 +138,7 @@ export default function VerifyPage({
 
   return (
     <main className="flex min-h-screen flex-col md:flex-row bg-[#050508] text-white">
-      {/* LEFT SIDE */}
+     {/* OTP verification panel */}
       <div className="flex w-full flex-col justify-between px-5 py-8 sm:px-8 md:px-10 lg:w-[45%] lg:px-16 xl:px-24">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-xl shadow-md shadow-violet-500/20">
@@ -237,7 +242,7 @@ export default function VerifyPage({
         </div>
       </div>
 
-      {/* RIGHT SIDE SHOWCASE */}
+      {/* Animated movie showcase */}
       <div className="relative hidden md:flex flex-1 items-center justify-center overflow-hidden border-l border-white/5 bg-[#07070c]">
         <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#050508] via-transparent to-[#050508]/30 pointer-events-none" />
 
@@ -246,7 +251,7 @@ export default function VerifyPage({
         <div className="absolute bottom-1/4 right-1/4 h-[280px] w-[280px] lg:h-[400px] lg:w-[400px] rounded-full bg-pink-500/15 blur-[120px]" />
 
         <div className="absolute rotate-12 scale-110 flex flex-col gap-4 lg:gap-6 opacity-25 mix-blend-screen select-none pointer-events-none">
-          {/* ROW 1 */}
+          {/* Poster marquee row 1 */}
           <motion.div
             ref={trackRef1}
             style={{ x: x1 }}
@@ -274,7 +279,7 @@ export default function VerifyPage({
             ))}
           </motion.div>
 
-          {/* ROW 2 */}
+          {/* Poster marquee row 2 */}
           <motion.div
             style={{ x: useMotionValue(0) }}
             className="flex shrink-0 will-change-transform"

@@ -1,11 +1,13 @@
 "use client";
 
+// React hooks and animation utilities
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useAnimationFrame, useMotionValue } from "framer-motion";
 import toast from "react-hot-toast";
 import { sendOTP } from "@/actions/actions";
 
+// Movie poster assets for animated background rows
 const POSTERS_ROW_1 = [
   "/Movies/PK__PEEKAY__2014.jpg",
   "/Movies/Animal.jpg",
@@ -22,7 +24,7 @@ const POSTERS_ROW_2 = [
   "/Movies/Moana.jpg",
 ];
 
-// High-precision seamless wrapping helper
+// Utility function for infinite marquee looping
 const wrapX = (min: number, max: number, v: number) => {
   const rangeSize = max - min;
   return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
@@ -31,48 +33,51 @@ const wrapX = (min: number, max: number, v: number) => {
 export default function Home() {
   const router = useRouter();
 
-  // Track state setups
+  // References and animation state for first marquee row
   const trackRef1 = useRef<HTMLDivElement>(null);
   const x1 = useMotionValue(0);
   const [isHovered1, setIsHovered1] = useState(false);
 
+  // References and animation state for second marquee row
   const trackRef2 = useRef<HTMLDivElement>(null);
   const x2 = useMotionValue(0);
   const [isHovered2, setIsHovered2] = useState(false);
 
-  // Ready states to prevent jumping calculations on initial load
+  // Prevent animation calculations before DOM measurements are ready
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Small delay ensures Next.js has fully rendered and measured DOM widths
+    // Wait for DOM rendering before starting marquee animation
     const timer = setTimeout(() => setIsReady(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
+  // Duplicate posters to create a seamless infinite scrolling effect
   const endlessRow1 = [...POSTERS_ROW_1, ...POSTERS_ROW_1, ...POSTERS_ROW_1];
   const endlessRow2 = [...POSTERS_ROW_2, ...POSTERS_ROW_2, ...POSTERS_ROW_2];
 
-  // base speed multiplier (pixels per millisecond)
+  // Animation speed configuration
   const SPEED_COEFF = 0.06;
 
-  // Time-delta tracking loops for high-performance fluid rendering
+  // Smooth marquee animation using frame delta timing
   useAnimationFrame((time, delta) => {
     if (!isReady) return;
 
-    // Row 1: Smooth Left Flow
+    // Move first row from right to left
     if (!isHovered1 && trackRef1.current) {
       const totalWidth = trackRef1.current.scrollWidth;
+
       if (totalWidth > 0) {
         const baseWidth = totalWidth / 3;
-        // Delta ensures consistent frame movement regardless of device refresh rate lags
         let currentX = x1.get() - delta * SPEED_COEFF;
         x1.set(wrapX(-baseWidth, 0, currentX));
       }
     }
 
-    // Row 2: Smooth Right Flow
+    // Move second row from left to right
     if (!isHovered2 && trackRef2.current) {
       const totalWidth = trackRef2.current.scrollWidth;
+
       if (totalWidth > 0) {
         const baseWidth = totalWidth / 3;
         let currentX = x2.get() + delta * SPEED_COEFF;
@@ -81,31 +86,40 @@ export default function Home() {
     }
   });
 
+  // Handle OTP login request
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
+
     const toastId = toast.loading("Sending OTP...");
 
     try {
+      // Send OTP and redirect user to verification page
       await sendOTP(email);
-      toast.success("OTP Sent Successfully!", { id: toastId });
+
+      toast.success("OTP Sent Successfully!", {
+        id: toastId,
+      });
+
       router.push(`/verify?email=${email}`);
     } catch {
-      toast.error("Failed to send OTP", { id: toastId });
+      toast.error("Failed to send OTP", {
+        id: toastId,
+      });
     }
   }
-
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#07070c] text-white">
-      {/* Background Glow Effects */}
+      {/* Animated background glow effects */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-violet-600/20 blur-[150px]" />
         <div className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-fuchsia-500/20 blur-[120px]" />
         <div className="absolute top-1/2 left-0 h-[350px] w-[350px] rounded-full bg-indigo-500/20 blur-[120px]" />
       </div>
 
-      {/* Marquee Background Wrapper */}
+      {/* Infinite scrolling movie poster marquee */}
       <div className="absolute top-0 left-0 right-0 z-0 flex flex-col gap-4 pt-28 pb-6 select-none opacity-15 mix-blend-luminosity lg:inset-0 lg:justify-center lg:gap-6 lg:py-0">
         {/* Row 1 Wrapper */}
         <div className="overflow-hidden flex w-full">
@@ -158,7 +172,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Foreground Content Layer */}
+      {/* Main hero section */}
       <div className="relative z-10 flex min-h-screen items-center justify-center px-6 pt-24 md:pt-0">
         <div className="grid w-full max-w-7xl gap-16 lg:grid-cols-2 lg:gap-24">
           {/* Left Hero Side */}
@@ -180,6 +194,7 @@ export default function Home() {
               discover favorites, and never forget what you've watched again.
             </p>
 
+            {/* Product features */}
             <div className="mt-10 overflow-hidden md:overflow-visible">
               <motion.div
                 drag="x"
@@ -206,7 +221,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Login Card Side */}
+          {/* Right OTP login card */}
           <div className="flex items-center justify-center mb-20 md:mb-0">
             <div className="relative w-full max-w-md">
               <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 opacity-30 blur-xl" />

@@ -14,6 +14,7 @@ export default function WatchedCheckbox({
   const [isWatched, setIsWatched] = useState(watched);
   const [pending, startTransition] = useTransition();
 
+  // Keep local state synchronized with incoming props
   useEffect(() => {
     setIsWatched(watched);
   }, [watched]);
@@ -21,7 +22,7 @@ export default function WatchedCheckbox({
   const handleChange = () => {
     const nextState = !isWatched;
 
-    // Optimistic UI update
+    // Optimistically update UI before server confirmation
     setIsWatched(nextState);
 
     const loading = toast.loading("Updating...");
@@ -33,7 +34,7 @@ export default function WatchedCheckbox({
         toast.dismiss(loading);
         toast.success(nextState ? "Marked as Watched ✅" : "Moved to Queue ⏳");
       } catch (err) {
-        // revert if failed
+        // Revert UI state if update fails
         setIsWatched(!nextState);
 
         toast.dismiss(loading);
