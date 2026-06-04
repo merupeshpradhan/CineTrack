@@ -1,46 +1,25 @@
-import React from "react";
-
-type MetricBoxProps = {
+type Props = {
   totalMovies: number;
   watchedMovies: number;
   notWatchedMovies: number;
 };
 
-function MetricBox({
-  totalMovies,
-  watchedMovies,
-  notWatchedMovies,
-}: MetricBoxProps) {
+function MetricBox({ totalMovies, watchedMovies, notWatchedMovies }: Props) {
   return (
-    <section className="grid grid-cols-3 gap-3 mb-8" aria-label="Statistics">
-      {/* Total */}
-      <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-3 relative overflow-hidden before:absolute before:top-0 before:left-0 before:w-1 before:h-full before:bg-[#D3D3FF]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[#D3D3FF]/40">
-          Total
-        </p>
-        <p className="text-xl font-black text-[#D3D3FF] mt-0.5">
-          {totalMovies}
-        </p>
+    <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-4">
+        <p className="text-[10px] uppercase text-[#D3D3FF]/40">Total</p>
+        <p className="text-2xl font-black">{totalMovies}</p>
       </div>
 
-      {/* Watched */}
-      <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-3 relative overflow-hidden before:absolute before:top-0 before:left-0 before:w-1 before:h-full before:bg-[#ED80E9]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[#ED80E9]">
-          Watched
-        </p>
-        <p className="text-xl font-black text-[#ED80E9] mt-0.5">
-          {watchedMovies}
-        </p>
+      <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-4">
+        <p className="text-[10px] uppercase text-[#ED80E9]">Watched</p>
+        <p className="text-2xl font-black text-[#ED80E9]">{watchedMovies}</p>
       </div>
 
-      {/* Queue */}
-      <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-3 relative overflow-hidden before:absolute before:top-0 before:left-0 before:w-1 before:h-full before:bg-[#9400D3]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[#9400D3]">
-          Queue
-        </p>
-        <p className="text-xl font-black text-[#D3D3FF]/80 mt-0.5">
-          {notWatchedMovies}
-        </p>
+      <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-4">
+        <p className="text-[10px] uppercase text-[#9400D3]">Queue</p>
+        <p className="text-2xl font-black">{notWatchedMovies}</p>
       </div>
     </section>
   );

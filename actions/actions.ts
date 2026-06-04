@@ -104,23 +104,24 @@ export async function addMovie(formData: FormData) {
   });
 
   await prisma.movie.create({
-    data: {
-      title,
-      description,
-      watchDate: new Date(watchDate),
-      imageUrl: uploadResponse.secure_url,
-      userId: user.id,
-    },
-  });
+  data: {
+    title,
+    description,
+    watchDate: new Date(watchDate),
+    imageUrl: uploadResponse.secure_url,
+    userId: user.id,
+  },
+});
 
-  redirect("/dashboard");
+revalidatePath("/dashboard");
+
+return { success: true };
 }
 
 export async function deleteMovie(movieId: string) {
   "use server";
 
   const cookieStore = await cookies();
-
   const session = cookieStore.get("session")?.value;
 
   if (!session) {
@@ -128,12 +129,12 @@ export async function deleteMovie(movieId: string) {
   }
 
   await prisma.movie.delete({
-    where: {
-      id: movieId,
-    },
+    where: { id: movieId },
   });
 
-  redirect("/dashboard");
+  revalidatePath("/dashboard");
+
+  return { success: true };
 }
 
 export async function updateMovie(movieId: string, formData: FormData) {
@@ -143,18 +144,18 @@ export async function updateMovie(movieId: string, formData: FormData) {
   const description = formData.get("description") as string;
   const watchDate = formData.get("watchDate") as string;
 
-  await prisma.movie.update({
-    where: {
-      id: movieId,
-    },
-    data: {
-      title,
-      description,
-      watchDate: new Date(watchDate),
-    },
-  });
+await prisma.movie.update({
+  where: { id: movieId },
+  data: {
+    title,
+    description,
+    watchDate: new Date(watchDate),
+  },
+});
 
-  redirect("/dashboard");
+revalidatePath("/dashboard");
+
+return { success: true };
 }
 
 export async function toggleWatched(id: string) {

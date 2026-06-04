@@ -1,6 +1,7 @@
 import React from "react";
 import WatchedCheckbox from "./WatchedCheckbox";
 import { deleteMovie } from "@/actions/actions";
+import DeleteButton from "./DeleteButton";
 
 type Movie = {
   id: string;
@@ -11,71 +12,76 @@ type Movie = {
   watched: boolean;
 };
 
-type MoviesDataStreamProps = {
+type Props = {
   movies: Movie[];
 };
 
-function MoviesDataStream({ movies }: MoviesDataStreamProps) {
+function MoviesDataStream({ movies }: Props) {
   return (
     <div>
       {movies.length === 0 ? (
-        <div className="text-center py-12 bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl">
-          <p className="text-[#D3D3FF]/40 text-xs uppercase tracking-wider">
-            No catalog records match query.
+        <div className="text-center py-16 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+          <p className="text-[#D3D3FF]/30 text-sm tracking-wide">
+            Your movie collection is currently empty.
           </p>
         </div>
       ) : (
-        <main className="space-y-2">
+        <main className="space-y-4">
           {movies.map((movie) => (
             <article
               key={movie.id}
-              className="group flex items-center bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 hover:bg-[#D8BFD8]/10 hover:border-[#D8BFD8]/20 rounded-xl p-2.5 transition-all duration-150 gap-4"
+              className="group flex flex-col sm:flex-row items-stretch bg-gradient-to-r from-[#D8BFD8]/5 to-transparent backdrop-blur-md border border-white/5 hover:border-[#ED80E9]/20 rounded-2xl overflow-hidden transition-all duration-300"
             >
-              <img
-                src={movie.imageUrl || "https://unsplash.com"}
-                alt={movie.title}
-                loading="lazy"
-                className="w-[5vw] object-cover transition-transform duration-200 group-hover:scale-105"
-              />
+              {/* FIXED HEIGHT, NATURAL WIDTH IMAGE CONTAINER */}
+              <div className="relative h-48 sm:h-52 shrink-0 bg-zinc-900">
+                <img
+                  src={movie.imageUrl || "https://unsplash.com"}
+                  alt={movie.title}
+                  loading="lazy"
+                  className="w-auto h-full object-contain"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-transparent to-black/50 sm:to-transparent" />
+              </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between flex-1 min-w-0 gap-2">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-sm font-bold text-[#D3D3FF] truncate group-hover:text-[#ED80E9] transition-colors">
+              {/* DETAILED SUMMARY CONTENT */}
+              <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 min-w-0 gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center justify-between gap-4">
+                    <h3 className="text-base font-bold text-white tracking-tight truncate group-hover:text-[#ED80E9] transition">
                       {movie.title}
                     </h3>
-
-                    <span className="text-[10px] font-mono text-[#D3D3FF]/30 hidden md:inline">
-                      //
+                    <span className="text-xs text-[#D3D3FF]/40 shrink-0">
                       {new Date(movie.watchDate).toLocaleDateString(undefined, {
-                        dateStyle: "short",
+                        dateStyle: "medium",
                       })}
                     </span>
                   </div>
 
-                  <p className="text-xs text-[#D3D3FF]/50 truncate mt-0.5 max-w-xl">
-                    {movie.description || "No metadata summary available."}
+                  <p className="text-xs md:text-sm text-[#D3D3FF]/60 line-clamp-3 mt-2 leading-relaxed">
+                    {movie.description ||
+                      "No description provided for this catalog entry."}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <WatchedCheckbox id={movie.id} watched={movie.watched} />
+                {/* CONTROL PANEL */}
+                <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-auto">
+                  <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
+                    <WatchedCheckbox id={movie.id} watched={movie.watched} />
+                    <span className="text-xs font-medium text-[#D3D3FF]/70">
+                      Mark watched
+                    </span>
+                  </div>
 
-                  <a
-                    href={`/dashboard/movie/${movie.id}`}
-                    className="inline-flex items-center justify-center h-7 px-3 text-[10px] font-black uppercase tracking-wider bg-[#D8BFD8]/10 hover:bg-[#9400D3] border border-[#D8BFD8]/20 hover:border-[#9400D3] text-[#D3D3FF] hover:text-white rounded-md"
-                  >
-                    Open
-                  </a>
-
-                  <form action={deleteMovie.bind(null, movie.id)}>
-                    <button
-                      type="submit"
-                      className="inline-flex items-center justify-center h-7 px-3 text-[10px] font-black uppercase tracking-wider bg-red-500/5 hover:bg-red-950/60 border border-red-500/10 hover:border-red-500/40 text-red-400/70 hover:text-red-400 rounded-md"
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`/dashboard/movie/${movie.id}`}
+                      className="h-9 px-4 flex items-center text-xs font-semibold text-white bg-white/10 hover:bg-[#9400D3] rounded-xl transition"
                     >
-                      Drop
-                    </button>
-                  </form>
+                      Open Details
+                    </a>
+
+                    <DeleteButton id={movie.id} />
+                  </div>
                 </div>
               </div>
             </article>
