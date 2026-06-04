@@ -58,7 +58,7 @@ export default async function DashboardPage({
               {search ? "Search results" : "Your collection"}
             </h2>
             <p className="text-sm sm:text-base font-semibold text-[#D3D3FF] mt-1">
-              {search ? `"${search}"` : "All Movies Dashboard"}
+              {search ? `${search}` : "All Movies Dashboard"}
             </p>
           </div>
 

@@ -137,25 +137,46 @@ export async function deleteMovie(movieId: string) {
   return { success: true };
 }
 
-export async function updateMovie(movieId: string, formData: FormData) {
-  "use server";
-
+export async function updateMovie(formData: FormData) {
+  const id = formData.get("id") as string;
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
   const watchDate = formData.get("watchDate") as string;
 
-await prisma.movie.update({
-  where: { id: movieId },
-  data: {
-    title,
-    description,
-    watchDate: new Date(watchDate),
-  },
-});
+  const image = formData.get("image") as File | null;
 
-revalidatePath("/dashboard");
+  let imageUrl: string | undefined;
 
-return { success: true };
+  // ✅ Upload new image only if provided
+  if (image && image.size > 0) {
+    const bytes = await image.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const base64 = `data:${image.type};base64,${buffer.toString("base64")}`;
+
+    const uploadResponse = await cloudinary.uploader.upload(base64, {
+      folder: "movie-watchlist",
+    });
+
+    imageUrl = uploadResponse.secure_url;
+  }
+
+  await prisma.movie.update({
+    where: { id },
+    data: {
+      title,
+      description,
+      watchDate: new Date(watchDate),
+
+      // ✅ only update image if new one exists
+      ...(imageUrl && { imageUrl }),
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/movie/${id}`);
+
+  return { success: true };
 }
 
 export async function toggleWatched(id: string) {

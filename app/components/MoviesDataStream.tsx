@@ -1,7 +1,10 @@
-import React from "react";
+"use client";
+
+import React, { useTransition } from "react";
 import WatchedCheckbox from "./WatchedCheckbox";
-import { deleteMovie } from "@/actions/actions";
 import DeleteButton from "./DeleteButton";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 type Movie = {
   id: string;
@@ -17,6 +20,30 @@ type Props = {
 };
 
 function MoviesDataStream({ movies }: Props) {
+  const router = useRouter();
+  const [isOpenPending, startOpenTransition] = useTransition();
+
+  // Handlers navigation events with toast states
+  const handleOpenDetails = (id: string, title: string) => {
+    // 1. Fire the spinning loader immediately
+    const toastId = toast.loading(`Opening details for "${title}"...`);
+
+    startOpenTransition(async () => {
+      try {
+        // 2. Trigger Next.js pre-fetching and routing
+        await router.push(`/dashboard/movie/${id}`);
+        
+        // 3. Overwrite loader with success status
+        toast.success("Loaded successfully ✅", { id: toastId });
+      } catch (error) {
+        console.error("Navigation failed", error);
+        
+        // 4. Fallback if route fails to execute
+        toast.error("Failed to load details ❌", { id: toastId });
+      }
+    });
+  };
+
   return (
     <div>
       {movies.length === 0 ? (
@@ -73,12 +100,13 @@ function MoviesDataStream({ movies }: Props) {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <a
-                      href={`/dashboard/movie/${movie.id}`}
-                      className="h-9 px-4 flex items-center text-xs font-semibold text-white bg-white/10 hover:bg-[#9400D3] rounded-xl transition"
+                    <button
+                      onClick={() => handleOpenDetails(movie.id, movie.title)}
+                      disabled={isOpenPending}
+                      className="h-9 px-4 flex items-center text-xs font-semibold text-white bg-white/10 hover:bg-[#9400D3] rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Open Details
-                    </a>
+                    </button>
 
                     <DeleteButton id={movie.id} />
                   </div>
