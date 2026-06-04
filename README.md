@@ -136,7 +136,7 @@ REFRESH_TOKEN_SECRET=your_refresh_token_secret
 Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/cinetrack.git
+git clone https://github.com/merupeshpradhan/CineTrack.git
 ```
 
 Install dependencies
