@@ -5,16 +5,16 @@ import SearchBox from "@/app/components/SearchBox";
 import Header from "../components/Header";
 import MetricBox from "../components/MetricBox";
 import MoviesDataStream from "../components/MoviesDataStream";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function DashboardPage({
   searchParams,
 }: {
   searchParams?: Promise<{ search?: string }>;
 }) {
-  const cookieStore = await cookies();
-  const session = cookieStore.get("session")?.value;
+  const user = await getCurrentUser();
 
-  if (!session) {
+  if (!user) {
     redirect("/");
   }
 
@@ -23,7 +23,7 @@ export default async function DashboardPage({
 
   const movies = await prisma.movie.findMany({
     where: {
-      userId: session,
+      userId: user.id,
       title: {
         contains: search,
         mode: "insensitive",

@@ -8,12 +8,14 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   otp       String?
   otpExpiry DateTime?
 
-  movies    Movie[]
+  refreshToken String?
+
+  movies Movie[]
 
   createdAt DateTime @default(now())
 }
@@ -24,10 +26,10 @@ model Movie {
   imageUrl    String
   description String
   watchDate   DateTime
-  watched     Boolean @default(false)
+  watched     Boolean  @default(false)
 
   userId String
-  user   User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
 }

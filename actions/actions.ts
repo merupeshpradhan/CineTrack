@@ -6,6 +6,11 @@ import { redirect } from "next/navigation";
 import { transporter } from "@/lib/mail";
 import cloudinary from "@/lib/cloudinary";
 import { revalidatePath } from "next/cache";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyAccessToken,
+} from "@/lib/jwt";
 
 export async function sendOTP(email: string) {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -50,25 +55,83 @@ export async function verifyOTP(email: string, otp: string) {
     return { success: false };
   }
 
+  const accessToken = generateAccessToken(user.id);
+  const refreshToken = generateRefreshToken(user.id);
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      refreshToken,
+    },
+  });
+
   const cookieStore = await cookies();
 
-  cookieStore.set("session", user.id, {
+  cookieStore.set("accessToken", accessToken, {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     path: "/",
+    maxAge: 60 * 15,
+  });
+
+  cookieStore.set("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
   });
 
   return { success: true };
 }
 
 export async function logout() {
-  "use server";
-
   const cookieStore = await cookies();
 
-  cookieStore.delete("session");
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  if (refreshToken) {
+    await prisma.user.updateMany({
+      where: {
+        refreshToken,
+      },
+      data: {
+        refreshToken: null,
+      },
+    });
+  }
+
+  cookieStore.delete("accessToken");
+  cookieStore.delete("refreshToken");
 
   redirect("/");
+}
+
+async function getCurrentUser() {
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  if (!accessToken) return null;
+
+  try {
+    const decoded = verifyAccessToken(accessToken) as {
+      userId: string;
+    };
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: decoded.userId,
+      },
+    });
+
+    return user;
+  } catch {
+    return null;
+  }
 }
 
 export async function addMovie(formData: FormData) {
@@ -79,24 +142,21 @@ export async function addMovie(formData: FormData) {
     const image = formData.get("image") as File;
 
     // 1. Session Authenticity Check Validation
-    const cookieStore = await cookies();
-    const session = cookieStore.get("session")?.value;
-
-    if (!session) {
-      return { success: false, message: "Authentication failed. Session expired." };
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: session },
-    });
+    const user = await getCurrentUser();
 
     if (!user) {
-      return { success: false, message: "User account records missing or corrupted." };
+      return {
+        success: false,
+        message: "User account records missing or corrupted.",
+      };
     }
 
     // 2. Structural Image Validation Catch
     if (!image || image.size === 0) {
-      return { success: false, message: "Image upload is required. Please select a valid file." };
+      return {
+        success: false,
+        message: "Image upload is required. Please select a valid file.",
+      };
     }
 
     // 3. Convert Binary Streaming Array to Base64 Image Strings
@@ -118,7 +178,7 @@ export async function addMovie(formData: FormData) {
         imageUrl: uploadResponse.secure_url,
         userId: user.id,
         // CRITICAL FIX: Explicitly default watched state value mapping
-        watched: false, 
+        watched: false,
       },
     });
 
@@ -128,26 +188,30 @@ export async function addMovie(formData: FormData) {
     return { success: true };
   } catch (error) {
     console.error("SERVER SIDE EXCEPTION [addMovie]:", error);
-    return { 
-      success: false, 
-      message: error instanceof Error ? error.message : "Database ingestion sequence failed." 
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Database ingestion sequence failed.",
     };
   }
 }
 
-
 export async function deleteMovie(movieId: string) {
   "use server";
 
-  const cookieStore = await cookies();
-  const session = cookieStore.get("session")?.value;
+  const user = await getCurrentUser();
 
-  if (!session) {
+  if (!user) {
     redirect("/");
   }
 
-  await prisma.movie.delete({
-    where: { id: movieId },
+  await prisma.movie.deleteMany({
+    where: {
+      id: movieId,
+      userId: user.id,
+    },
   });
 
   revalidatePath("/dashboard");
@@ -156,12 +220,29 @@ export async function deleteMovie(movieId: string) {
 }
 
 export async function updateMovie(formData: FormData) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return { success: false };
+  }
+
   const id = formData.get("id") as string;
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
   const watchDate = formData.get("watchDate") as string;
 
   const image = formData.get("image") as File | null;
+
+  const movie = await prisma.movie.findFirst({
+    where: {
+      id,
+      userId: user.id,
+    },
+  });
+
+  if (!movie) {
+    return { success: false };
+  }
 
   let imageUrl: string | undefined;
 
@@ -198,8 +279,17 @@ export async function updateMovie(formData: FormData) {
 }
 
 export async function toggleWatched(id: string) {
-  const movie = await prisma.movie.findUnique({
-    where: { id },
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return;
+  }
+
+  const movie = await prisma.movie.findFirst({
+    where: {
+      id,
+      userId: user.id,
+    },
   });
 
   if (!movie) return;
