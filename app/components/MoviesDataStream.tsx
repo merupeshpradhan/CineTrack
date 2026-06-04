@@ -103,7 +103,7 @@ function MoviesDataStream({ movies }: Props) {
                     <button
                       onClick={() => handleOpenDetails(movie.id, movie.title)}
                       disabled={isOpenPending}
-                      className="h-9 px-4 flex items-center text-xs font-semibold text-white bg-white/10 hover:bg-[#9400D3] rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="h-9 px-4 flex items-center text-xs font-semibold text-white bg-white/10 hover:bg-[#9400D3] rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       Open Details
                     </button>

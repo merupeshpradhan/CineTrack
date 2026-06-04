@@ -133,7 +133,7 @@ export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
               type="button"
               onClick={() => router.back()}
               disabled={isPending}
-              className="px-4 py-2 bg-white/10 rounded"
+              className="px-4 py-2 bg-white/10 rounded cursor-pointer"
             >
               Cancel
             </button>
@@ -141,7 +141,7 @@ export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
             <button
               type="submit"
               disabled={isPending}
-              className="px-5 py-2 bg-pink-600 rounded font-bold"
+              className="px-5 py-2 bg-pink-600 rounded font-bold cursor-pointer"
             >
               {isPending ? "Saving..." : "Save Changes"}
             </button>

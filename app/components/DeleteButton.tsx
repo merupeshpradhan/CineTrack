@@ -33,7 +33,7 @@ export default function DeleteButton({ id }: { id: string }) {
     <button
       onClick={handleDelete}
       disabled={isPending}
-      className="h-9 px-4 text-xs font-semibold text-red-400 bg-red-500/10 hover:bg-red-500 hover:text-white rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+      className="h-9 px-4 text-xs font-semibold text-red-400 bg-red-500/10 hover:bg-red-500 hover:text-white rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
     >
       {isPending ? "Deleting..." : "Delete"}
     </button>

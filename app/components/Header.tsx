@@ -23,7 +23,7 @@ export default function Header() {
         </a>
 
         <form action={logout}>
-          <button className="bg-white/10 text-xs px-4 py-2 rounded-md">
+          <button className="bg-white/10 text-xs px-4 py-2 rounded-md cursor-pointer">
             Logout
           </button>
         </form>
