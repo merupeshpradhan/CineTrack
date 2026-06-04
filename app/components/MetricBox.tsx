@@ -6,7 +6,7 @@ type Props = {
 
 function MetricBox({ totalMovies, watchedMovies, notWatchedMovies }: Props) {
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <section className="grid grid-cols-3 gap-3">
       <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-4">
         <p className="text-[10px] uppercase text-[#D3D3FF]/40">Total</p>
         <p className="text-2xl font-black">{totalMovies}</p>

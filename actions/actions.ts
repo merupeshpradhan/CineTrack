@@ -72,51 +72,69 @@ export async function logout() {
 }
 
 export async function addMovie(formData: FormData) {
-  const title = formData.get("title") as string;
-  const description = formData.get("description") as string;
-  const watchDate = formData.get("watchDate") as string;
-  const image = formData.get("image") as File;
+  try {
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const watchDate = formData.get("watchDate") as string;
+    const image = formData.get("image") as File;
 
-  const cookieStore = await cookies();
-  const session = cookieStore.get("session")?.value;
+    // 1. Session Authenticity Check Validation
+    const cookieStore = await cookies();
+    const session = cookieStore.get("session")?.value;
 
-  if (!session) {
-    redirect("/");
+    if (!session) {
+      return { success: false, message: "Authentication failed. Session expired." };
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session },
+    });
+
+    if (!user) {
+      return { success: false, message: "User account records missing or corrupted." };
+    }
+
+    // 2. Structural Image Validation Catch
+    if (!image || image.size === 0) {
+      return { success: false, message: "Image upload is required. Please select a valid file." };
+    }
+
+    // 3. Convert Binary Streaming Array to Base64 Image Strings
+    const bytes = await image.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64 = `data:${image.type};base64,${buffer.toString("base64")}`;
+
+    // 4. Secure Asset Transmission directly up to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(base64, {
+      folder: "movie-watchlist",
+    });
+
+    // 5. Commit Complete Records Object Structure safely inside Prisma Databases
+    await prisma.movie.create({
+      data: {
+        title,
+        description,
+        watchDate: new Date(watchDate),
+        imageUrl: uploadResponse.secure_url,
+        userId: user.id,
+        // CRITICAL FIX: Explicitly default watched state value mapping
+        watched: false, 
+      },
+    });
+
+    // 6. Purge active caching frames to trigger rapid Client Dashboard refreshes
+    revalidatePath("/dashboard");
+
+    return { success: true };
+  } catch (error) {
+    console.error("SERVER SIDE EXCEPTION [addMovie]:", error);
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : "Database ingestion sequence failed." 
+    };
   }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      id: session,
-    },
-  });
-
-  if (!user) {
-    redirect("/");
-  }
-
-  const bytes = await image.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  const base64 = `data:${image.type};base64,${buffer.toString("base64")}`;
-
-  const uploadResponse = await cloudinary.uploader.upload(base64, {
-    folder: "movie-watchlist",
-  });
-
-  await prisma.movie.create({
-  data: {
-    title,
-    description,
-    watchDate: new Date(watchDate),
-    imageUrl: uploadResponse.secure_url,
-    userId: user.id,
-  },
-});
-
-revalidatePath("/dashboard");
-
-return { success: true };
 }
+
 
 export async function deleteMovie(movieId: string) {
   "use server";
