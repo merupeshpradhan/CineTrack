@@ -40,8 +40,6 @@ CineTrack allows users to securely log in using Email OTP, manage their personal
 
 ## Dashboard
 
-> Add your Dashboard screenshot here
-
 ![Dashboard](https://github.com/user-attachments/assets/01eea778-d920-4f91-b019-4d9717597d95
 )
 
@@ -55,8 +53,6 @@ CineTrack allows users to securely log in using Email OTP, manage their personal
 ---
 
 ## Edit Movie Page
-
-> Add your Edit Movie screenshot here
 
 ![Edit Movie](https://github.com/user-attachments/assets/aed23e30-0c93-4e82-9412-0e037455aae1
 )
