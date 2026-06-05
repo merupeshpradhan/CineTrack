@@ -15,14 +15,9 @@ export default async function DashboardPage({
   // Get authenticated user
   const user = await getCurrentUser();
 
-  console.log(user);
-
+  // Redirect unauthenticated users to login page
   if (!user) {
-    return (
-      <div className="flex h-screen items-center justify-center text-white">
-        Session expired. Please refresh the page.
-      </div>
-    );
+    redirect("/");
   }
 
   // Resolve search query from URL parameters
@@ -62,8 +57,22 @@ export default async function DashboardPage({
         />
 
         {/* Search and collection controls */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          ...
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-[#161324]/40 p-4 rounded-xl border border-[#D8BFD8]/10">
+          {/* Left Side: Text Details */}
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-base font-semibold text-[#ED80E9]">
+              Collection Directory
+            </h2>
+            <p className="text-xs text-[#D3D3FF]/60">
+              Showing {totalMovies} {totalMovies === 1 ? "entry" : "entries"}{" "}
+              saved to your profile
+            </p>
+          </div>
+
+          {/* Right Side: Search Input View */}
+          <div className="w-full md:w-80">
+            <SearchBox />
+          </div>
         </div>
 
         {/* Movies list container */}

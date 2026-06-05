@@ -10,7 +10,6 @@ import {
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
-  verifyRefreshToken,
 } from "@/lib/jwt";
 
 export async function sendOTP(email: string) {
@@ -111,82 +110,22 @@ export async function logout() {
   redirect("/");
 }
 
-export async function refreshAccessToken() {
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get("refreshToken")?.value;
-
-  if (!refreshToken) return null;
-
-  try {
-    const decoded = verifyRefreshToken(refreshToken) as {
-      userId: string;
-    };
-
-    const user = await prisma.user.findFirst({
-      where: { id: decoded.userId, refreshToken },
-    });
-
-    if (!user) return null;
-
-    const newAccessToken = generateAccessToken(user.id);
-
-    cookieStore.set("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 15,
-    });
-
-    return { success: true };
-  } catch {
-    return null;
-  }
-}
-
 async function getCurrentUser() {
   const cookieStore = await cookies();
 
   const accessToken = cookieStore.get("accessToken")?.value;
-  const refreshToken = cookieStore.get("refreshToken")?.value;
 
-  // 1. Try access token first
-  if (accessToken) {
-    try {
-      const decoded = verifyAccessToken(accessToken) as { userId: string };
-
-      return await prisma.user.findUnique({
-        where: { id: decoded.userId },
-      });
-    } catch {
-      // access token expired → continue to refresh flow
-    }
-  }
-
-  // 2. If no refresh token → logout state
-  if (!refreshToken) return null;
+  if (!accessToken) return null;
 
   try {
-    const decoded = verifyRefreshToken(refreshToken) as { userId: string };
+    const decoded = verifyAccessToken(accessToken) as {
+      userId: string;
+    };
 
-    const user = await prisma.user.findFirst({
+    const user = await prisma.user.findUnique({
       where: {
         id: decoded.userId,
-        refreshToken,
       },
-    });
-
-    if (!user) return null;
-
-    // 3. Generate new access token
-    const newAccessToken = generateAccessToken(user.id);
-
-    cookieStore.set("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 15,
     });
 
     return user;
