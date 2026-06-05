@@ -40,7 +40,7 @@ CineTrack allows users to securely log in using Email OTP, manage their personal
 
 ## Dashboard
 
-![Dashboard](https://github.com/user-attachments/assets/01eea778-d920-4f91-b019-4d9717597d95
+![Dashboard](https://github.com/user-attachments/assets/c8136720-b2b8-448d-b8db-a1821e54e019
 )
 
 ---
