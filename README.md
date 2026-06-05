@@ -86,14 +86,64 @@ CineTrack allows users to securely log in using Email OTP, manage their personal
 # 📂 Folder Structure
 
 ```bash
-app/
-├── dashboard/
-├── verify/
-├── components/
+├── .next/
 ├── actions/
+│   └── actions.ts
+├── app/
+│   ├── components/
+│   │   ├── DeleteButton.tsx
+│   │   ├── Header.tsx
+│   │   ├── MetricBox.tsx
+│   │   ├── MoviesDataStream.tsx
+│   │   ├── OtpSentToast.tsx
+│   │   ├── SearchBox.tsx
+│   │   ├── ToastProvider.tsx
+│   │   └── WatchedCheckbox.tsx
+│   ├── dashboard/
+│   │   ├── add-movie/
+│   │   │   └── page.tsx
+│   │   ├── edit/[id]/
+│   │   │   ├── EditMovieForm.tsx
+│   │   │   └── page.tsx
+│   │   ├── movie/[id]/
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── test/
+│   │   └── page.tsx
+│   ├── verify/
+│   │   └── page.tsx
+│   ├── globals.css
+│   ├── icon.png
+│   ├── layout.tsx
+│   └── page.tsx
 ├── lib/
+│   ├── auth.ts
+│   ├── cloudinary.ts
+│   ├── jwt.ts
+│   ├── mail.ts
+│   └── prisma.ts
+├── node_modules/
+├── prisma/
+│   ├── migrations/
+│   └── schema.prisma
 ├── public/
-└── prisma/
+│   ├── Movies/
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── .env
+├── .gitignore
+├── eslint.config.mjs
+├── next-env.d.ts
+├── next.config.ts
+├── package.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── postcss.config.mjs
+├── README.md
+└── tsconfig.json
 ```
 
 ---
