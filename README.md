@@ -1,226 +1,36 @@
-# 🎬 CineTrack
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A modern full-stack Movie Watchlist application built with Next.js, Prisma, PostgreSQL, Cloudinary, and OTP Authentication.
+## Getting Started
 
-CineTrack allows users to securely log in using Email OTP, manage their personal movie collection, upload movie posters, track watched movies, and organize their watchlist in a beautiful and responsive dashboard.
-
----
-
-## ✨ Features
-
-* 🔐 Passwordless OTP Authentication
-* 🎬 Add New Movies
-* ✏️ Edit Movie Details
-* 🗑️ Delete Movies
-* ☁️ Cloudinary Image Upload
-* 📊 Movie Dashboard Analytics
-* 🔍 Search Movies
-* ✅ Mark Movies as Watched
-* 📱 Fully Responsive Design
-* ⚡ Fast Server Actions
-* 🎨 Modern UI with Tailwind CSS
-
----
-
-# 📸 Project Screenshots
-
-## Landing Page
-
-![Landing Page](https://github.com/user-attachments/assets/2296774f-a6b5-465d-95b3-de529a2b2272
-)
-
----
-
-## OTP Verification Page
-
-![OTP Verification](https://github.com/user-attachments/assets/195534c6-3b59-4031-9935-a6a9610e7c5a
-)
-
----
-
-## Dashboard
-
-![Dashboard](https://github.com/user-attachments/assets/c8136720-b2b8-448d-b8db-a1821e54e019
-)
-
----
-
-## Movie Details Page
-
-![Add Movie](https://github.com/user-attachments/assets/70dff946-171a-4cee-881b-a184dc39a97f
-)
-
----
-
-## Edit Movie Page
-
-![Edit Movie](https://github.com/user-attachments/assets/aed23e30-0c93-4e82-9412-0e037455aae1
-)
-
----
-
-# 🛠️ Tech Stack
-
-### Frontend
-
-* Next.js 16
-* React 19
-* TypeScript
-* Tailwind CSS v4
-* Framer Motion
-* React Hot Toast
-
-### Backend
-
-* Next.js Server Actions
-* Prisma ORM
-* PostgreSQL (Neon)
-
-### Services
-
-* Cloudinary
-* Nodemailer
-
----
-
-# 📂 Folder Structure
-
-```bash
-├── .next/
-├── actions/
-│   └── actions.ts
-├── app/
-│   ├── components/
-│   │   ├── DeleteButton.tsx
-│   │   ├── Header.tsx
-│   │   ├── MetricBox.tsx
-│   │   ├── MoviesDataStream.tsx
-│   │   ├── OtpSentToast.tsx
-│   │   ├── SearchBox.tsx
-│   │   ├── ToastProvider.tsx
-│   │   └── WatchedCheckbox.tsx
-│   ├── dashboard/
-│   │   ├── add-movie/
-│   │   │   └── page.tsx
-│   │   ├── edit/[id]/
-│   │   │   ├── EditMovieForm.tsx
-│   │   │   └── page.tsx
-│   │   ├── movie/[id]/
-│   │   │   └── page.tsx
-│   │   └── page.tsx
-│   ├── test/
-│   │   └── page.tsx
-│   ├── verify/
-│   │   └── page.tsx
-│   ├── globals.css
-│   ├── icon.png
-│   ├── layout.tsx
-│   └── page.tsx
-├── lib/
-│   ├── auth.ts
-│   ├── cloudinary.ts
-│   ├── jwt.ts
-│   ├── mail.ts
-│   └── prisma.ts
-├── node_modules/
-├── prisma/
-│   ├── migrations/
-│   └── schema.prisma
-├── public/
-│   ├── Movies/
-│   ├── file.svg
-│   ├── globe.svg
-│   ├── next.svg
-│   ├── vercel.svg
-│   └── window.svg
-├── .env
-├── .gitignore
-├── eslint.config.mjs
-├── next-env.d.ts
-├── next.config.ts
-├── package.json
-├── pnpm-lock.yaml
-├── pnpm-workspace.yaml
-├── postcss.config.mjs
-├── README.md
-└── tsconfig.json
-```
-
----
-
-# ⚙️ Environment Variables
-
-Create a `.env` file:
-
-```env
-DATABASE_URL=your_database_url
-
-EMAIL_USER=your_email
-EMAIL_PASS=your_email_app_password
-
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-
-ACCESS_TOKEN_SECRET=your_access_token_secret
-REFRESH_TOKEN_SECRET=your_refresh_token_secret
-```
-
----
-
-# 🚀 Installation
-
-Clone the repository
-
-```bash
-git clone https://github.com/merupeshpradhan/CineTrack.git
-```
-
-Install dependencies
-
-```bash
-npm install
-```
-
-Generate Prisma Client
-
-```bash
-npx prisma generate
-```
-
-Run migrations
-
-```bash
-npx prisma migrate dev
-```
-
-Start development server
+First, run the development server:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
----
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-# 🎯 Future Improvements
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-* Movie Ratings
-* Favorites Collection
-* Genre Filtering
-* Pagination
-* User Profiles
-* Movie Recommendations
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
----
+## Learn More
 
-# 👨‍💻 Author
+To learn more about Next.js, take a look at the following resources:
 
-Rupesh Pradhan
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Full-Stack Developer passionate about building modern web applications using React, Next.js, Prisma, PostgreSQL, and Cloud Technologies.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
----
+## Deploy on Vercel
 
-# 📜 License
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-This project is licensed under the MIT License.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

@@ -1,23 +1,24 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  otp       String?
-  otpExpiry DateTime?
-
+  id           String    @id @default(cuid())
+  email        String    @unique
+  otp          String?
+  otpExpiry    DateTime?
   refreshToken String?
-
-  movies Movie[]
-
-  createdAt DateTime @default(now())
+  movies       Movie[]
+  createdAt    DateTime  @default(now())
 }
 
 model Movie {
@@ -27,9 +28,7 @@ model Movie {
   description String
   watchDate   DateTime
   watched     Boolean  @default(false)
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
 }
