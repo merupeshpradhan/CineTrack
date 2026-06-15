@@ -130,7 +130,7 @@ export default async function MovieDetailsPage({
                 </a>
 
                 <a
-                  href={`/dashboard/edit/${movie.id}`}
+                  href={`/dashboard/movie/edit/${movie.id}`}
                   className="inline-flex items-center justify-center h-10 px-6 text-xs font-black uppercase tracking-wider bg-[#9400D3] hover:bg-[#ED80E9] text-white rounded-xl transition-all shadow-lg shadow-[#9400D3]/20 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Edit Entry
