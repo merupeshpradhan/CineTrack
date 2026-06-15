@@ -1,133 +1,109 @@
-"use client";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { fetchWithAuth, setAccessToken } from "@/lib/api-client";
-import Link from "next/link";
+// Fully Fixed Absolute Alias Mapping Paths matching your project folder tree layout
+import Header from "@/components/header/Header";
+import MetricBox from "@/components/movie/MetricBox";
+import SearchBox from "@/components/movie/SearchBox";
+import MoviesDataStream from "@/components/movie/MoviesDataStream";
 
-interface UserProfile {
-  id: string;
-  email: string;
-}
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ search?: string }>;
+}) {
+  // 1. Recover and authenticate the user profile directly on the Server Side via Cookies
+  let user = null;
+  try {
+    const cookieStore = await cookies();
+    const refreshToken = cookieStore.get("refreshToken")?.value;
 
-export default function DashboardPage() {
-  const router = useRouter();
-  const [users, setUsers] = useState<UserProfile[]>([]);
-  const [loading, setLoading] = useState(true);
+    if (refreshToken) {
+      // Decode user reference identifier matching your custom REFRESH_TOKEN_SECRET signature
+      const decoded = jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET!,
+      ) as { userId: string };
 
-  // Load the test list data securely using our intercepting utility
-  useEffect(() => {
-    async function loadDashboardData() {
-      try {
-        const res = await fetchWithAuth("/api/test");
-        if (res.ok) {
-          const data = await res.json();
-          setUsers(data);
-        }
-      } catch (err) {
-        console.error("Failed to load authorized components", err);
-      } finally {
-        setLoading(false);
-      }
+      // Query database row via our native Prisma pipeline instance
+      user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+      });
     }
-    loadDashboardData();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      setAccessToken(null); // Wipe out RAM token tracking
-      router.push("/login");
-    } catch (err) {
-      console.error("Logout routing execution failed");
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-        <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-          Verifying session credentials...
-        </p>
-      </div>
+  } catch (authError) {
+    console.error(
+      "Dashboard Server side cookie token challenge failed:",
+      authError,
     );
   }
 
+  // 2. Redirect unauthenticated users safely back to the home/login page
+  if (!user) {
+    redirect("/");
+  }
+
+  // 3. Resolve search query from Next.js URL parameters asynchronous tree
+  const resolvedParams = await searchParams;
+  const search = resolvedParams?.search || "";
+
+  // 4. Fetch the specific authenticated user's movies with optional case-insensitive search filtering
+  const movies = await prisma.movie.findMany({
+    where: {
+      userId: user.id,
+      title: {
+        contains: search,
+        mode: "insensitive",
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  // 5. Calculate dashboard statistics counters dynamically
+  const totalMovies = movies.length;
+  const watchedMovies = movies.filter((m) => m.watched).length;
+  const notWatchedMovies = totalMovies - watchedMovies;
+
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
-      <nav className="flex items-center justify-between border-b border-zinc-200 bg-white px-8 py-4 dark:border-zinc-800 dark:bg-zinc-900">
-        <h1 className="text-lg font-bold tracking-tight">
-          Security Center Dashboard
-        </h1>
-        <button
-          onClick={handleLogout}
-          className="cursor-pointer rounded-lg bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-        >
-          Logout Session
-        </button>
-      </nav>
+    <div className="min-h-screen bg-gradient-to-b from-[#0f0b18] via-[#110e1a] to-[#0b0812] text-[#D3D3FF]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6">
+        {/* Dashboard header */}
+        <Header />
 
-      <main className="mx-auto max-w-4xl p-8">
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="text-xl font-bold tracking-tight">
-            Registered Database Members
-          </h2>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            This data table was loaded over HTTP using an optimized short-term
-            Access Token pipeline.
-          </p>
+        {/* Movie statistics overview (FIXED: Props passed down perfectly) */}
+        <MetricBox
+          totalMovies={totalMovies}
+          watchedMovies={watchedMovies}
+          notWatchedMovies={notWatchedMovies}
+        />
 
-          <div className="mt-6 overflow-hidden rounded-xl border border-zinc-100 dark:border-zinc-800">
-            {users.length === 0 ? (
-              <p className="p-4 text-sm text-zinc-500">
-                Database connected successfully, but no user accounts were found.
-              </p>
-            ) : (
-              <table className="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
-                <thead className="bg-zinc-50 text-xs uppercase text-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300">
-                  <tr>
-                    <th className="px-6 py-3">ID Reference</th>
-                    <th className="px-6 py-3">Email Vector</th>
-                    <th className="px-6 py-3 text-right">Actions</th> {/* ✅ FIXED: Header matching row structure */}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                  {users.map((u) => (
-                    <tr
-                      key={u.id}
-                      className="bg-white hover:bg-zinc-50/50 dark:bg-zinc-900 dark:hover:bg-zinc-800/30"
-                    >
-                      <td className="font-mono px-6 py-4 text-xs">{u.id}</td>
-                      <td className="px-6 py-4">{u.email}</td>
-                      <td className="px-6 py-4 text-right"> {/* ✅ FIXED: Staged link element container */}
-                        <Link 
-                          href="/profile" 
-                          className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                        >
-                          View Profile
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+        {/* Informational Directory Subheading */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-[#161324]/40 p-4 rounded-xl border border-[#D8BFD8]/10">
+          {/* Left Side: Text Details */}
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-base font-semibold text-[#ED80E9]">
+              Collection Directory
+            </h2>
+            <p className="text-xs text-[#D3D3FF]/60">
+              Showing {totalMovies} {totalMovies === 1 ? "entry" : "entries"}{" "}
+              saved to your profile
+            </p>
           </div>
 
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={async () => {
-                const res = await fetchWithAuth("/api/test");
-                const data = await res.json();
-                console.log("Token Testing Diagnostic Payloads:", data);
-              }}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-            >
-              Test Route Interceptors
-            </button>
+          {/* Right Side: Search Input View */}
+          <div className="w-full md:w-80">
+            <SearchBox />
           </div>
         </div>
-      </main>
+
+        {/* Movies list container */}
+        <div className="rounded-2xl border border-[#D8BFD8]/10 bg-[#D8BFD8]/5 p-3 sm:p-4">
+          <MoviesDataStream movies={movies} />
+        </div>
+      </div>
     </div>
   );
 }
