@@ -27,9 +27,9 @@ const wrapX = (min: number, max: number, v: number) => {
 
 export default function AnimatedPosterGrid() {
   const trackRef1 = useRef<HTMLDivElement>(null);
-  const trackRef2 = useRef<HTMLDivElement>(null);
-
   const x1 = useMotionValue(0);
+
+  const trackRef2 = useRef<HTMLDivElement>(null);
   const x2 = useMotionValue(0);
 
   const [isReady, setIsReady] = useState(false);
