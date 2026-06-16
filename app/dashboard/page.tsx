@@ -14,6 +14,8 @@ interface PageProps {
   searchParams: Promise<{ search?: string | string[] | undefined }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage({ searchParams }: PageProps) {
   // 1. Recover and authenticate the user profile directly on the Server Side via Cookies
   let user = null;
