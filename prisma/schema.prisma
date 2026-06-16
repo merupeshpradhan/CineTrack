@@ -22,13 +22,19 @@ model User {
 }
 
 model Movie {
-  id          String   @id @default(cuid())
-  title       String
-  imageUrl    String
-  description String
-  watchDate   DateTime
-  watched     Boolean  @default(false)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
+  id String @id @default(cuid())
+
+  title    String
+  imageUrl String
+
+  genre    String?
+  duration String? // "2 hr 30 min"
+
+  watchDate DateTime?
+  watched   Boolean   @default(false)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
 }
