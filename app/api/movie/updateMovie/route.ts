@@ -27,6 +27,7 @@ export async function POST(request: Request) {
     const duration = formData.get("duration") as string;
     const watchDate = formData.get("watchDate") as string;
     const watched = formData.get("watched") === "true";
+    const location = formData.get("location") as string | null;
     const image = formData.get("image") as File | null;
 
     if (!id || !title || !genre || !duration || !watchDate) {
@@ -83,6 +84,7 @@ export async function POST(request: Request) {
         duration,
         watchDate: new Date(watchDate),
         watched,
+        location: location ? location.trim() : null,
 
         ...(imageUrl && {
           imageUrl,
