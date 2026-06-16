@@ -28,7 +28,7 @@ model Movie {
   imageUrl String
 
   genre    String?
-  duration String? // "2 hr 30 min"
+  duration String?
 
   watchDate DateTime?
   watched   Boolean   @default(false)

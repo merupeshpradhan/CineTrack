@@ -6,17 +6,17 @@ import DeleteButton from "./actions/DeleteButton";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
-// FIXED: Changed Date types to string to match Prisma's output format perfectly
+// Update the type inside components/movie/MoviesDataStream.tsx
 type Movie = {
   id: string;
   title: string;
   genre?: string | null;
   duration?: string | null;
   imageUrl?: string | null;
-  watchDate: string; // 👈 Changed from Date to string
+  watchDate: Date | string | null; // 👈 CHANGE THIS: Allow Date, string, or null
   watched: boolean;
   location?: string | null;
-  createdAt: string | Date; // 👈 Handle both string and Date safely
+  createdAt: Date | string; // 👈 CHANGE THIS: Allow Date or string safely
   userId: string;
 };
 
@@ -57,15 +57,14 @@ function MoviesDataStream({ movies }: Props) {
               key={movie.id}
               className="group flex flex-col sm:flex-row items-stretch bg-gradient-to-b sm:bg-gradient-to-r from-[#D8BFD8]/5 to-transparent backdrop-blur-md border border-white/5 hover:border-[#ED80E9]/20 rounded-2xl overflow-hidden transition-all duration-300"
             >
-              {/* IMAGE CONTAINER */}
-              <div className="relative h-40 sm:h-30 md:h-52 w-full sm:w-auto shrink-0 bg-zinc-900/60 flex justify-center items-center overflow-hidden">
+              {/* FIXED IMAGE CONTAINER: Added specific width 'sm:w-36' and forced object-contain for full images */}
+              <div className="relative h-44 sm:h-auto w-full sm:w-36 shrink-0 bg-black/40 flex justify-center items-center overflow-hidden border-b sm:border-b-0 sm:border-r border-white/5">
                 <img
                   src={movie.imageUrl || "/placeholder.jpg"}
                   alt={movie.title}
                   loading="lazy"
-                  className="w-full h-full object-cover sm:w-auto sm:h-full sm:object-contain"
+                  className="w-full h-full object-contain"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-[#0d0a14]/80 via-transparent to-transparent sm:from-transparent sm:to-transparent" />
               </div>
 
               {/* DETAILED CONTENT CONTAINER */}
@@ -77,21 +76,32 @@ function MoviesDataStream({ movies }: Props) {
                       <h3 className="text-sm sm:text-base md:text-lg font-bold text-white tracking-tight truncate group-hover:text-[#ED80E9] transition">
                         {movie.title}
                       </h3>
-                      
+
                       {/* DYNAMIC METADATA SUB-ROW BAR */}
                       <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#D3D3FF]/60 font-medium">
                         {movie.genre && <span>🎬 {movie.genre}</span>}
                         {movie.genre && movie.duration && <span>•</span>}
-                        {movie.duration && <span className="font-mono">⏱️ {movie.duration}</span>}
+                        {movie.duration && (
+                          <span className="font-mono">⏱️ {movie.duration}</span>
+                        )}
                         {movie.location && <span>•</span>}
-                        {movie.location && <span className="text-[#ED80E9]">📍 {movie.location}</span>}
+                        {movie.location && (
+                          <span className="text-[#ED80E9]">
+                            📍 {movie.location}
+                          </span>
+                        )}
                       </div>
                     </div>
 
                     <span className="text-[10px] sm:text-xs font-medium text-[#D3D3FF]/40 shrink-0">
-                      {new Date(movie.watchDate).toLocaleDateString("en-US", {
-                        dateStyle: "medium",
-                      })}
+                      {movie.watchDate
+                        ? new Date(movie.watchDate).toLocaleDateString(
+                            "en-US",
+                            {
+                              dateStyle: "medium",
+                            },
+                          )
+                        : "N/A"}
                     </span>
                   </div>
                 </div>

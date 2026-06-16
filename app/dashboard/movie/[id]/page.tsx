@@ -72,7 +72,7 @@ export default async function MovieDetailsPage({
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             
             {/* LEFT SIDE COLUMN: TALL UN-CROPPED POSTER DISPLAY */}
-            <div className="md:col-span-4 w-full max-w-[280px] mx-auto md:mx-0">
+            <div className="md:col-span-4 w-full max-w-[280px\] mx-auto md:mx-0">
               <div className="aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#161324] border border-white/10 shadow-2xl relative group">
                 <img
                   src={moviePoster}
