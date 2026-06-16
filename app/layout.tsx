@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 
 // Global application metadata
 export const metadata: Metadata = {
-  title: "Movie Watchlist",
-  description: "Track, organize, and manage your personal movie collection.",
+  title: "CineTrack — Personal Movie Watchlist Tracker",
+  description: "Track, organize, and manage your custom cinema library collection logs seamlessly.",
 };
 
 export default function RootLayout({
