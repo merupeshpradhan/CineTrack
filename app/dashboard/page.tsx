@@ -9,11 +9,12 @@ import MetricBox from "@/components/movie/MetricBox";
 import SearchBox from "@/components/movie/SearchBox";
 import MoviesDataStream from "@/components/movie/MoviesDataStream";
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams?: Promise<{ search?: string }>;
-}) {
+// Define strict types for the component props matching Next.js App Router specs
+interface PageProps {
+  searchParams: Promise<{ search?: string | string[] | undefined }>;
+}
+
+export default async function DashboardPage({ searchParams }: PageProps) {
   // 1. Recover and authenticate the user profile directly on the Server Side via Cookies
   let user = null;
   try {
@@ -44,11 +45,11 @@ export default async function DashboardPage({
     redirect("/");
   }
 
-  // 3. Resolve search query from Next.js URL parameters asynchronous tree
+  // 3. Resolve search query safely using await according to Next.js App Router rules
   const resolvedParams = await searchParams;
-  const search = resolvedParams?.search || "";
+  const search = typeof resolvedParams?.search === "string" ? resolvedParams.search : "";
 
-  // 4. Fetch the specific authenticated user's movies with optional case-insensitive search filtering
+  // 4. Fetch the full movie records to match the expected subcomponent types perfectly
   const movies = await prisma.movie.findMany({
     where: {
       userId: user.id,
@@ -73,7 +74,7 @@ export default async function DashboardPage({
         {/* Dashboard header */}
         <Header />
 
-        {/* Movie statistics overview (FIXED: Props passed down perfectly) */}
+        {/* Movie statistics overview */}
         <MetricBox
           totalMovies={totalMovies}
           watchedMovies={watchedMovies}

@@ -6,13 +6,18 @@ import DeleteButton from "./actions/DeleteButton";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
+// FIXED: Changed Date types to string to match Prisma's output format perfectly
 type Movie = {
   id: string;
   title: string;
-  description?: string;
-  imageUrl?: string;
-  watchDate: Date;
+  genre?: string | null;
+  duration?: string | null;
+  imageUrl?: string | null;
+  watchDate: string; // 👈 Changed from Date to string
   watched: boolean;
+  location?: string | null;
+  createdAt: string | Date; // 👈 Handle both string and Date safely
+  userId: string;
 };
 
 type Props = {
@@ -52,15 +57,14 @@ function MoviesDataStream({ movies }: Props) {
               key={movie.id}
               className="group flex flex-col sm:flex-row items-stretch bg-gradient-to-b sm:bg-gradient-to-r from-[#D8BFD8]/5 to-transparent backdrop-blur-md border border-white/5 hover:border-[#ED80E9]/20 rounded-2xl overflow-hidden transition-all duration-300"
             >
-              {/* IMAGE CONTAINER - Mobile: landscape cover height | Tablet/Desktop: fixed height auto width */}
+              {/* IMAGE CONTAINER */}
               <div className="relative h-40 sm:h-30 md:h-52 w-full sm:w-auto shrink-0 bg-zinc-900/60 flex justify-center items-center overflow-hidden">
                 <img
-                  src={movie.imageUrl || "https://unsplash.com"}
+                  src={movie.imageUrl || "/placeholder.jpg"}
                   alt={movie.title}
                   loading="lazy"
                   className="w-full h-full object-cover sm:w-auto sm:h-full sm:object-contain"
                 />
-                {/* Responsive Gradient overlay direction matches container breakdown flow */}
                 <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-[#0d0a14]/80 via-transparent to-transparent sm:from-transparent sm:to-transparent" />
               </div>
 
@@ -68,10 +72,22 @@ function MoviesDataStream({ movies }: Props) {
               <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 min-w-0 gap-4">
                 <div className="min-w-0">
                   {/* HEADER FRAME */}
-                  <div className="flex flex-row xs:items-center justify-between gap-1.5 sm:gap-4">
-                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-white tracking-tight truncate group-hover:text-[#ED80E9] transition">
-                      {movie.title}
-                    </h3>
+                  <div className="flex flex-row items-center justify-between gap-1.5 sm:gap-4">
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <h3 className="text-sm sm:text-base md:text-lg font-bold text-white tracking-tight truncate group-hover:text-[#ED80E9] transition">
+                        {movie.title}
+                      </h3>
+                      
+                      {/* DYNAMIC METADATA SUB-ROW BAR */}
+                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#D3D3FF]/60 font-medium">
+                        {movie.genre && <span>🎬 {movie.genre}</span>}
+                        {movie.genre && movie.duration && <span>•</span>}
+                        {movie.duration && <span className="font-mono">⏱️ {movie.duration}</span>}
+                        {movie.location && <span>•</span>}
+                        {movie.location && <span className="text-[#ED80E9]">📍 {movie.location}</span>}
+                      </div>
+                    </div>
+
                     <span className="text-[10px] sm:text-xs font-medium text-[#D3D3FF]/40 shrink-0">
                       {new Date(movie.watchDate).toLocaleDateString("en-US", {
                         dateStyle: "medium",

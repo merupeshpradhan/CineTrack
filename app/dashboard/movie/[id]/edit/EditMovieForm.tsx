@@ -12,6 +12,7 @@ type SerializedMovie = {
   imageUrl?: string | null;
   watchDate: string;
   watched: boolean;
+  location?: string | null;
 };
 
 export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
@@ -24,6 +25,7 @@ export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
   const [genre, setGenre] = useState(movie.genre || "");
   const [watchDate, setWatchDate] = useState(movie.watchDate);
   const [watched, setWatched] = useState(movie.watched);
+  const [location, setLocation] = useState(movie.location || "");
 
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState(movie.imageUrl || "");
@@ -58,6 +60,7 @@ export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
         formData.append("duration", `${hours || 0} hr ${minutes || 0} min`);
         formData.append("watchDate", watchDate);
         formData.append("watched", String(watched));
+        formData.append("location", location.trim());
 
         if (image) {
           formData.append("image", image);
@@ -91,7 +94,7 @@ export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
 
   return (
     <div className="min-h-screen bg-[#110e1a] text-[#D3D3FF] flex justify-center items-center px-4 py-12">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-4xl">
         <button
           onClick={() => router.back()}
           disabled={isPending}
@@ -180,7 +183,9 @@ export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
                 </div>
 
                 <div>
-                  <label className="block mb-2">Duration</label>
+                  <label className="block mb-2 text-sm font-medium text-gray-300">
+                    Duration
+                  </label>
                   <div className="flex gap-3">
                     {/* HOURS INPUT CONTAINER */}
                     <div className="flex items-center bg-[#161324] rounded-md pl-3 pr-1 w-1/2 justify-between border border-white/5 focus-within:border-[#ED80E9]/30">
@@ -267,10 +272,9 @@ export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
                 </div>
 
                 <div>
-                  <label className="block mb-2 text-xs font-bold uppercase tracking-wider text-[#ED80E9]/80">
+                  <label className="block mb-2 text-sm font-medium text-gray-300">
                     Watch Date
                   </label>
-
                   <div className="relative group cursor-pointer">
                     {/* HIDDEN INPUT: Expanded to fill the container so clicking anywhere opens the calendar */}
                     <input
@@ -339,6 +343,22 @@ export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
                         </svg>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-300">
+                    Watch Location
+                  </label>
+                  <div className="flex items-center bg-[#161324] rounded-md px-3 w-full border border-white/5 focus-within:border-[#ED80E9]/30 transition-colors">
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      disabled={isPending}
+                      className="w-full py-3 bg-transparent outline-none text-white text-sm"
+                      placeholder="e.g. Cinema Theater, Home..."
+                    />
                   </div>
                 </div>
 

@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     const genre = formData.get("genre") as string;
     const duration = formData.get("duration") as string;
     const watchDate = formData.get("watchDate") as string;
+    const location = formData.get("location")?.toString().trim();
     const image = formData.get("image") as File | null;
 
     if (!title || !genre || !duration || !watchDate) {
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
         genre,
         duration,
         watchDate: new Date(watchDate),
+        location,
         imageUrl: uploadedImageUrl,
 
         watched: false,
