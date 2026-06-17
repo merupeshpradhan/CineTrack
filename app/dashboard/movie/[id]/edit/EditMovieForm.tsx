@@ -98,9 +98,12 @@ export default function EditMovieForm({ movie }: { movie: SerializedMovie }) {
         <button
           onClick={() => router.back()}
           disabled={isPending}
-          className="mb-4 text-xs text-[#ED80E9] cursor-pointer"
+          className="inline-flex items-center gap-2 mb-4 text-[14px] font-black uppercase tracking-widest text-[#D3D3FF]/40 hover:text-[#ED80E9] transition-colors group cursor-pointer"
         >
-          ← Back
+          <span className="transform group-hover:-translate-x-0.5 transition-transform">
+            &larr;
+          </span>{" "}
+          Back
         </button>
 
         <div className="bg-[#D8BFD8]/5 rounded-xl p-6 border border-[#D8BFD8]/10">

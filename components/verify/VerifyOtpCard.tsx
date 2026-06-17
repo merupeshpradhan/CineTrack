@@ -94,8 +94,8 @@ export default function VerifyOtpCard() {
           🎬
         </div>
 
-        <span className="text-sm font-semibold tracking-wide text-zinc-300">
-          WATCHLIST
+        <span className="text-lg font-semibold tracking-wide text-zinc-300">
+          CineTrack
         </span>
       </div>
 
@@ -182,7 +182,7 @@ export default function VerifyOtpCard() {
         <div className="mt-8 text-center sm:text-left">
           <button
             onClick={() => router.push("/")}
-            className="text-sm text-zinc-500 transition hover:text-zinc-300"
+            className="text-sm text-zinc-500 transition hover:text-zinc-300 cursor-pointer"
           >
             ← Use a different email address
           </button>

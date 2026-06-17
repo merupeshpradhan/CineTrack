@@ -110,9 +110,12 @@ export default function AddMovieForm() {
           type="button"
           onClick={handleBack}
           disabled={isPending}
-          className="mb-4 text-xs text-[#ED80E9]"
+          className="inline-flex items-center gap-2 mb-4 text-[10px] font-black uppercase tracking-widest text-[#D3D3FF]/40 hover:text-[#ED80E9] transition-colors group cursor-pointer"
         >
-          ← Back to Dashboard
+          <span className="transform group-hover:-translate-x-0.5 transition-transform">
+            &larr;
+          </span>{" "}
+          Back to Dashboard
         </button>
 
         <div className="bg-[#D8BFD8]/5 rounded-xl p-6 border border-[#D8BFD8]/10">
@@ -264,9 +267,7 @@ export default function AddMovieForm() {
 
                 {/* WATCH DATE */}
                 <div>
-                  <label className="block mb-2">
-                    Watch Date
-                  </label>
+                  <label className="block mb-2">Watch Date</label>
                   <div className="relative group cursor-pointer">
                     {/* HIDDEN NATIVE INPUT: Fills the wrapper completely so clicking anywhere opens the calendar panel naturally */}
                     <input
