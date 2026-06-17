@@ -1,10 +1,13 @@
-import { prisma } from "@/lib/prisma";
-import nodemailer from "nodemailer";
+import { prisma } from "@/lib/prisma"; // Import Prisma client for database operations
+import nodemailer from "nodemailer"; // Import Nodemailer to send emails
 
+// Handle POST request for sending OTP email
 export async function POST(req: Request) {
   try {
+    // Extract email from request body
     const { email } = await req.json();
 
+    // Validate email input
     if (!email) {
       return Response.json(
         { error: "Email address is required" },
@@ -12,13 +15,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Generate a secure 6-digit OTP string
+    // Generate random 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // 2. Set an expiration timestamp (5 minutes from now)
+    // Set OTP expiration time (5 minutes from now)
     const expiryTime = new Date(Date.now() + 5 * 60 * 1000);
 
-    // 3. Save directly to the User model using an upsert action
+    // Save OTP in database
+    // If user exists → update OTP
+    // If user does not exist → create user record
     await prisma.user.upsert({
       where: { email },
       update: {
@@ -32,30 +37,44 @@ export async function POST(req: Request) {
       },
     });
 
-    // 4. Configure your Nodemailer transport setup
+    // Create email transporter using Gmail service
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER, // Sender email
+        pass: process.env.EMAIL_PASS, // App password
       },
     });
 
-    // 5. Send out the generated verification code via email with your custom styling template
+    // Send OTP email
     await transporter.sendMail({
+      // Email sender information
       from: `"CineTrack" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: `${otp} is your CineTrack verification code 🎬`,
-      text: `Your OTP is ${otp}. It will expire in 5 minutes.`, // Plain text fallback
 
-      // HIGH-CONTRAST ULTRA PREMIUM METROPOLIS DESIGN LAYER
+      // Receiver email
+      to: email,
+
+      // Email subject
+      subject: `${otp} is your CineTrack verification code 🎬`,
+
+      // Plain text fallback for unsupported email clients
+      text: `Your OTP is ${otp}. It will expire in 5 minutes.`,
+
+      // Styled HTML email template
       html: `
         <!DOCTYPE html>
         <html>
         <head>
+
+          <!-- Configure character encoding -->
           <meta charset="utf-8">
+
+          <!-- Responsive email scaling -->
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
           <style>
+
+            /* Entire email body styling */
             body { 
               background-color: #09070f; 
               color: #eae7f2; 
@@ -65,6 +84,8 @@ export async function POST(req: Request) {
               margin: 0; 
               -webkit-font-smoothing: antialiased;
             }
+
+            /* Main email card */
             .container { 
               max-width: 460px; 
               margin: 0 auto; 
@@ -75,10 +96,14 @@ export async function POST(req: Request) {
               box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
               text-align: left;
             }
+
+            /* Logo container */
             .logo-wrapper {
               text-align: center;
               margin-bottom: 35px;
             }
+
+            /* Brand logo */
             .logo { 
               font-size: 26px; 
               font-weight: 900; 
@@ -87,9 +112,13 @@ export async function POST(req: Request) {
               text-transform: uppercase; 
               display: inline-block;
             }
+
+            /* Highlight color for logo text */
             .logo span { 
               color: #ED80E9; 
             }
+
+            /* Main heading */
             .title { 
               color: #ffffff; 
               font-size: 22px; 
@@ -97,6 +126,8 @@ export async function POST(req: Request) {
               margin-bottom: 12px; 
               letter-spacing: -0.5px;
             }
+
+            /* Description text */
             .text { 
               color: #b3aed1; 
               font-size: 14px; 
@@ -104,6 +135,8 @@ export async function POST(req: Request) {
               margin-bottom: 30px; 
               margin-top: 0;
             }
+
+            /* OTP display box */
             .otp-container {
               background: linear-gradient(135deg, #181429 0%, #1e1933 100%);
               border: 1px solid #362f54;
@@ -112,6 +145,8 @@ export async function POST(req: Request) {
               text-align: center;
               margin-bottom: 25px;
             }
+
+            /* OTP number styling */
             .otp-code { 
               font-size: 42px; 
               font-weight: 800; 
@@ -121,6 +156,8 @@ export async function POST(req: Request) {
               font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; 
               text-shadow: 0 0 20px rgba(237, 128, 233, 0.2);
             }
+
+            /* Footer styling */
             .footer { 
               margin-top: 40px; 
               font-size: 12px; 
@@ -129,43 +166,58 @@ export async function POST(req: Request) {
               padding-top: 24px; 
               line-height: 1.5; 
             }
+
           </style>
         </head>
+
         <body>
+
           <div class="container">
-            <!-- Center Aligned Header Brand Signature -->
+
+            <!-- Brand section -->
             <div class="logo-wrapper">
               <div class="logo">Cine<span>Track</span></div>
             </div>
 
+            <!-- Email title -->
             <div class="title">Verification Code</div>
-            <p class="text">Confirm your identity to securely access your workspace. Copy and paste this authorization code into your active browser tab window.</p>
-            
-            <!-- Styled High Contrast Code Presenter Panel -->
+
+            <!-- Email description -->
+            <p class="text">
+              Confirm your identity to securely access your workspace.
+            </p>
+
+            <!-- OTP display -->
             <div class="otp-container">
               <h1 class="otp-code">${otp}</h1> 
             </div>
-            
-            <!-- FIXED SPACING WARNING PARAGRAPH -->
-            <p style="color: #9b94be; font-size: 13px; text-align: center; margin: 20px 0 10px 0; padding: 0; line-height: 1.4;">
-              ⏳ This verification link is temporary and will automatically expire in&nbsp;<strong>5 minutes</strong>.
+
+            <!-- Expiry warning -->
+            <p style="color: #9b94be; font-size: 13px; text-align: center;">
+              ⏳ This verification link expires in <strong>5 minutes</strong>.
             </p>
 
+            <!-- Footer -->
             <div class="footer">
-              This message was sent automatically upon an access request matching your account credentials. If you did not make this action request, please ignore this email.
+              Ignore this email if you did not request it.
             </div>
+
           </div>
+
         </body>
         </html>
       `,
     });
 
+    // Return success response
     return Response.json({
       message: "OTP sent successfully",
     });
   } catch (error) {
+    // Log server error
     console.error("SEND OTP ERROR:", error);
 
+    // Return failure response
     return Response.json({ error: "Failed to send OTP" }, { status: 500 });
   }
 }

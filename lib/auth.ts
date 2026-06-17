@@ -1,69 +1,104 @@
-// lib/auth.ts
+// Read cookies from server request
 import { cookies } from "next/headers";
+
+// Database connection
 import { prisma } from "./prisma";
-import jwt from "jsonwebtoken"; // ✅ FIXED: Replaced missing ./jwt file with official package
+
+// JWT verification library
+import jwt from "jsonwebtoken";
 
 export async function getCurrentUser() {
+  // Read cookie storage
   const cookieStore = await cookies();
+
+  // Get access token
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  // 1. First Pass: Fast authorization attempt using the Access Token string
+  // ==========================
+  // STEP 1
+  // FAST AUTH USING ACCESS TOKEN
+  // ==========================
+
   try {
     if (accessToken) {
-      // ✅ FIXED: Using direct jwt verification with your explicit .env secret key
+      // Decode and verify token
       const decoded = jwt.verify(
         accessToken,
-        process.env.ACCESS_TOKEN_SECRET!,
-      ) as { userId: string };
 
+        process.env.ACCESS_TOKEN_SECRET!,
+      ) as {
+        userId: string;
+      };
+
+      // Fetch user
       return await prisma.user.findUnique({
-        where: { id: decoded.userId },
+        where: {
+          id: decoded.userId,
+        },
       });
     }
   } catch (accessTokenError) {
+    // Access token invalid
     console.log("[AUTH SYSTEM] ACCESS TOKEN EXPIRED OR INVALID");
   }
 
-  // 2. Second Pass: Fallback validation lookup via the secure Refresh Token Cookie
+  // ==========================
+  // STEP 2
+  // FALLBACK TO REFRESH TOKEN
+  // ==========================
+
   const refreshToken = cookieStore.get("refreshToken")?.value;
+
   console.log("[AUTH SYSTEM] HAS REFRESH TOKEN COOKIE:", !!refreshToken);
 
+  // No refresh token
   if (!refreshToken) {
     return null;
   }
 
   try {
-    // ✅ FIXED: Using direct jwt verification with your explicit .env secret key
+    // Verify refresh token
     const decoded = jwt.verify(
       refreshToken,
-      process.env.REFRESH_TOKEN_SECRET!,
-    ) as { userId: string };
 
-    // Fetch the user matching the decoded payload key
+      process.env.REFRESH_TOKEN_SECRET!,
+    ) as {
+      userId: string;
+    };
+
+    // Load user
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: {
+        id: decoded.userId,
+      },
     });
 
+    // User missing
     if (!user) {
       return null;
     }
 
-    // Security Check: Block session if the token does not match the active DB string
+    // Security validation
+    // Token must match DB
+
     if (user.refreshToken !== refreshToken) {
       console.log(
         "[AUTH SYSTEM] WARNING: Stale or rolled refresh token detected.",
       );
+
       return null;
     }
 
-    // ❌ AS REQUESTED: DON'T CREATE ACCESS TOKEN HERE
-    // ❌ AS REQUESTED: DON'T SET COOKIE HERE
+    // Valid refresh session
+    // Return authenticated user
+
     return user;
   } catch (error) {
     console.log(
       "[AUTH SYSTEM] REFRESH TOKEN VALIDATION CRITICAL ERROR:",
       error,
     );
+
     return null;
   }
 }

@@ -1,11 +1,14 @@
-import { prisma } from "@/lib/prisma";
-import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma"; // Import Prisma client for database operations
+import jwt from "jsonwebtoken"; // Import JWT package for token generation
+import { cookies } from "next/headers"; // Import Next.js cookie utility
 
+// Handle POST request for OTP verification and login
 export async function POST(req: Request) {
   try {
+    // Extract email and OTP from request body
     const { email, otp } = await req.json();
 
+    // Validate required inputs
     if (!email || !otp) {
       return Response.json(
         { error: "Email and OTP are required" },
@@ -13,22 +16,25 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Find the user by email to inspect their stored OTP data
+    // Find user record using email
     const userRecord = await prisma.user.findUnique({
       where: { email },
     });
 
-    // 2. Validate user existence and check if the OTP matches
+    // Check:
+    // 1. User exists
+    // 2. Entered OTP matches database OTP
     if (!userRecord || userRecord.otp !== otp) {
       return Response.json({ error: "Invalid OTP" }, { status: 400 });
     }
 
-    // 3. Verify if the OTP has expired
+    // Check whether OTP has expired
     if (!userRecord.otpExpiry || userRecord.otpExpiry < new Date()) {
       return Response.json({ error: "OTP expired" }, { status: 400 });
     }
 
-    // 4. Clear the OTP fields immediately so this code cannot be reused
+    // Clear OTP immediately after successful verification
+    // Prevents OTP reuse
     let user = await prisma.user.update({
       where: { email },
       data: {
@@ -37,49 +43,71 @@ export async function POST(req: Request) {
       },
     });
 
-    // 5. Generate short-lived access token for quick testing
+    // Generate short-lived access token
+    // Used for accessing protected APIs
     const accessToken = jwt.sign(
       {
         userId: user.id,
         email: user.email,
       },
       process.env.ACCESS_TOKEN_SECRET!,
-      { expiresIn: "30s" },
+      {
+        expiresIn: "30s",
+      },
     );
 
-    // 6. Generate long-lived refresh token
+    // Generate refresh token
+    // Used to create new access tokens later
     const refreshToken = jwt.sign(
-      { userId: user.id },
+      {
+        userId: user.id,
+      },
       process.env.REFRESH_TOKEN_SECRET!,
-      { expiresIn: "7d" },
+      {
+        expiresIn: "7d",
+      },
     );
 
-    // 7. Save the refresh token to your Neon database row
+    // Store refresh token in database
     await prisma.user.update({
       where: { id: user.id },
-      data: { refreshToken },
+      data: {
+        refreshToken,
+      },
     });
 
-    // 8. Inject the HttpOnly cookie securely so your application proxy can read it
+    // Store refresh token inside secure HttpOnly cookie
     const cookieStore = await cookies();
+
     cookieStore.set("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-      path: "/",
+      httpOnly: true, // Prevent JavaScript access
+      secure: process.env.NODE_ENV === "production", // HTTPS in production
+      sameSite: "lax", // Basic CSRF protection
+      maxAge: 7 * 24 * 60 * 60, // Cookie valid for 7 days
+      path: "/", // Available across app
     });
 
-    // 9. Return both the short-lived access token and user metadata to your frontend
+    // Return access token and user data
     return Response.json({
       accessToken,
-      user: { id: user.id, email: user.email },
+
+      user: {
+        id: user.id,
+        email: user.email,
+      },
     });
   } catch (error) {
+    // Log unexpected server errors
     console.error("VERIFY OTP CRITICAL ERROR:", error);
+
+    // Return failure response
     return Response.json(
-      { error: "Verification process failed" },
-      { status: 500 },
+      {
+        error: "Verification process failed",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }

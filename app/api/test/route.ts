@@ -1,40 +1,78 @@
-import { prisma } from "@/lib/prisma";
-import jwt from "jsonwebtoken";
+import { prisma } from "@/lib/prisma"; // Import Prisma client for database operations
+import jwt from "jsonwebtoken"; // Import JWT package for access token verification
 
+// Handle GET request to fetch users list
 export async function GET(request: Request) {
   try {
+    // Read Authorization header
     const authHeader = request.headers.get("authorization");
 
+    // Validate authorization format
+    // Expected → Bearer <access_token>
     if (!authHeader?.startsWith("Bearer ")) {
-      return Response.json({ error: "Unauthorized access" }, { status: 401 });
+      return Response.json(
+        {
+          error: "Unauthorized access",
+        },
+        {
+          status: 401,
+        },
+      );
     }
 
+    // Extract access token
     const token = authHeader.split(" ")[1];
 
     try {
-      // 1. Verify token signature against your active secret key payload
+      // Verify token signature using secret key
+      // Blocks expired or modified tokens
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!);
     } catch {
-      // Return 401 if token is expired or tampered with so the frontend can intercept and hit /api/auth/refresh
-      return Response.json({ error: "Access token expired" }, { status: 401 });
+      // Token expired or invalid
+      // Frontend can trigger refresh token flow
+      return Response.json(
+        {
+          error: "Access token expired",
+        },
+        {
+          status: 401,
+        },
+      );
     }
 
-    // 2. Fetch users while specifically filtering out sensitive tokens and hashes
+    // Fetch all users
+    // Only expose safe public fields
     const users = await prisma.user.findMany({
       select: {
-        id: true,
-        email: true,
-        createdAt: true,
-        // Explicitly omitting otp, otpExpiry, and refreshToken for security
+        id: true, // User ID
+
+        email: true, // User email
+
+        createdAt: true, // Account creation date
+
+        // Sensitive fields intentionally excluded:
+        // otp
+        // otpExpiry
+        // refreshToken
       },
     });
 
-    return Response.json(users, { status: 200 });
+    // Return users list
+    return Response.json(users, {
+      status: 200,
+    });
   } catch (error: any) {
+    // Log server errors
     console.error("GET USERS ERROR:", error);
+
+    // Return failure response
     return Response.json(
-      { error: "Failed to fetch users registry metadata" },
-      { status: 500 },
+      {
+        error: "Failed to fetch users registry metadata",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }

@@ -1,34 +1,64 @@
-"use client"; // ✅ FIXED: Added client directive to protect server/client runtime boundary splitting
+"use client";
+// Required in Next.js App Router when this component
+// needs browser-side rendering or future client features
 
+// Define props received from parent component
 type Props = {
+  // Total number of movies
   totalMovies: number;
+
+  // Number of watched movies
   watchedMovies: number;
+
+  // Number of movies not watched yet
   notWatchedMovies: number;
 };
 
-export default function MetricBox({ totalMovies, watchedMovies, notWatchedMovies }: Props) {
+// Metric cards component
+export default function MetricBox({
+  totalMovies,
+  watchedMovies,
+  notWatchedMovies,
+}: Props) {
   return (
-    // Dashboard statistics metrics overview grid layout
+    // Grid layout → 3 columns with spacing
     <section className="grid grid-cols-3 gap-3 select-none">
-      
-      {/* Total Movies */}
+      {/* TOTAL MOVIES CARD */}
       <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-4 shadow-sm">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-[#D3D3FF]/40">Total</p>
+        {/* Card title */}
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[#D3D3FF]/40">
+          Total
+        </p>
+
+        {/* Dynamic total movie count */}
         <p className="text-2xl font-black text-white mt-1">{totalMovies}</p>
       </div>
 
-      {/* Watched Movies */}
+      {/* WATCHED MOVIES CARD */}
       <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-4 shadow-sm">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-[#ED80E9]">Watched</p>
-        <p className="text-2xl font-black text-[#ED80E9] mt-1">{watchedMovies}</p>
+        {/* Card title */}
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[#ED80E9]">
+          Watched
+        </p>
+
+        {/* Dynamic watched count */}
+        <p className="text-2xl font-black text-[#ED80E9] mt-1">
+          {watchedMovies}
+        </p>
       </div>
 
-      {/* Remaining Movie Queue */}
+      {/* REMAINING MOVIES CARD */}
       <div className="bg-[#D8BFD8]/5 border border-[#D8BFD8]/10 rounded-xl p-4 shadow-sm">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-[#9400D3]">Queue</p>
-        <p className="text-2xl font-black text-[#D3D3FF] mt-1">{notWatchedMovies}</p>
+        {/* Card title */}
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[#9400D3]">
+          Queue
+        </p>
+
+        {/* Dynamic queue count */}
+        <p className="text-2xl font-black text-[#D3D3FF] mt-1">
+          {notWatchedMovies}
+        </p>
       </div>
-      
     </section>
   );
 }
