@@ -12,7 +12,7 @@ Users can securely create an account, verify identity using OTP, manage authenti
 
 💻 Repository: https://github.com/merupeshpradhan/CineTrack
 
-👨‍💻 Portfolio (Optional): https://merupeshpradhan.vercel.app/
+👨‍💻 Portfolio: https://merupeshpradhan.vercel.app/
 
 ---
 
@@ -272,10 +272,45 @@ Dashboard Access
 
 # 📸 Screenshots
 
-* Login Page
-* OTP Verification
-* Dashboard
-* Add Movie
+### Login Page
+
+<img width="1919" alt="Login Page" src="https://github.com/user-attachments/assets/4b4a1977-616f-46d6-a33b-80d12738c485" />
+
+---
+
+### Email View
+
+<img width="1919" alt="Email View" src="https://github.com/user-attachments/assets/9f27a31d-8879-4b93-8401-d5c078097f38" />
+
+---
+
+### OTP Verification
+
+<img width="1919" alt="OTP Verification" src="https://github.com/user-attachments/assets/a2ab7c23-40a0-4617-accc-e58af9496dcb" />
+
+---
+
+### Dashboard
+
+<img width="1919" height="1018" alt="Dashboard" src="https://github.com/user-attachments/assets/2ab49abc-161c-4044-8ad9-619afc92f12d" />
+
+---
+
+### Add Movie
+
+<img width="1919" height="1020" alt="Add Movie" src="https://github.com/user-attachments/assets/0135937d-3920-478f-96de-11545f798613" />
+
+---
+
+### Movie Details
+
+<img width="1919" height="1020" alt="Movie Details" src="https://github.com/user-attachments/assets/3cc1d715-81a3-4f10-97b9-fc5790b4ef29" />
+
+---
+
+### Edit Movie
+
+<img width="1919" height="1020" alt="Edit Movie" src="https://github.com/user-attachments/assets/8c325da0-27ae-4cb0-a4b1-05f0728bf224" />
 
 ---
 
