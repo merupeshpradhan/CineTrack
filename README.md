@@ -8,9 +8,11 @@ Users can securely create an account, verify identity using OTP, manage authenti
 
 ## 🚀 Live Demo
 
-Portfolio: https://merupeshpradhan.vercel.app
+🌐 Live Project: https://cinetrack-pro.vercel.app/
 
-Repository: https://github.com/merupeshpradhan/CineTrack
+💻 Repository: https://github.com/merupeshpradhan/CineTrack
+
+👨‍💻 Portfolio (Optional): https://merupeshpradhan.vercel.app/
 
 ---
 
