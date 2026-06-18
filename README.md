@@ -1,36 +1,305 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 CineTrack
 
-## Getting Started
+A modern **Movie Tracking Platform** built with **Next.js, Prisma, Neon PostgreSQL, Cloudinary, JWT Authentication, OTP Verification, and Tailwind CSS**.
 
-First, run the development server:
+Users can securely create an account, verify identity using OTP, manage authentication sessions, and build their personal movie library.
+
+---
+
+## 🚀 Live Demo
+
+Portfolio: https://merupeshpradhan.vercel.app
+
+Repository: https://github.com/merupeshpradhan/CineTrack
+
+---
+
+# ✨ Features
+
+## 🔐 Authentication System
+
+* User Registration
+* User Login
+* OTP Email Verification
+* JWT Access Token Authentication
+* Refresh Token Session Recovery
+* Protected Routes
+* Secure Cookie Handling
+
+## 🎥 Movie Management
+
+* Add Movies
+* Upload Movie Posters
+* View Personal Movie Library
+* Dashboard Interface
+* Track Watch History
+
+## ☁️ Media Storage
+
+* Cloudinary Integration
+* Image Upload Optimization
+
+## 🗄 Database
+
+* PostgreSQL (Neon)
+* Prisma ORM
+
+## 🎨 UI / UX
+
+* Fully Responsive Design
+* Toast Notifications
+* Modern Glass UI
+* Animated Components
+* Mobile Friendly
+
+---
+
+# 🧱 Tech Stack
+
+## Frontend
+
+* Next.js 16
+* React 19
+* Tailwind CSS
+* Framer Motion
+* React Hot Toast
+
+## Backend
+
+* Next.js API Routes
+* Prisma ORM
+* Neon PostgreSQL
+* JWT Authentication
+* Nodemailer
+
+## Cloud Services
+
+* Cloudinary
+* Vercel
+
+---
+
+# 📂 Project Structure
+
+```bash
+CineTrack/
+├── .next/
+├── app/
+│   ├── api/
+│   │   ├── auth/
+│   │   │   ├── logout/
+│   │   │   │   └── route.ts
+│   │   │   ├── refresh/
+│   │   │   │   └── route.ts
+│   │   │   ├── send-otp/
+│   │   │   │   └── route.ts
+│   │   │   └── verify-otp/
+│   │   │       └── route.ts
+│   │   ├── movie/
+│   │   │   ├── addMovie/
+│   │   │   │   └── route.ts
+│   │   │   ├── deleteMovie/
+│   │   │   │   └── route.ts
+│   │   │   ├── toggleWatched/
+│   │   │   │   └── route.ts
+│   │   │   └── updateMovie/
+│   │   │       └── route.ts
+│   │   ├── profile/
+│   │   │   └── route.ts
+│   │   └── user/
+│   │       └── route.ts
+│   ├── dashboard/
+│   │   ├── add-movie/
+│   │   │   └── page.tsx
+│   │   └── movie/[id]/
+│   │       ├── edit/
+│   │       │   ├── EditMovieForm.tsx
+│   │       │   └── page.tsx
+│   │       └── page.tsx
+│   ├── login/
+│   │   └── page.tsx
+│   ├── verify/
+│   │   └── page.tsx
+│   ├── globals.css
+│   ├── icon.png
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── header/
+│   │   └── Header.tsx
+│   ├── login/
+│   │   ├── HeroContent.tsx
+│   │   ├── LoginAnimatedPosterGrid.tsx
+│   │   └── OtpLoginCard.tsx
+│   ├── movie/
+│   │   ├── actions/
+│   │   │   ├── DeleteButton.tsx
+│   │   │   └── WatchedCheckbox.tsx
+│   │   └── add/
+│   │       ├── AddMovieForm.tsx
+│   │       ├── BackButton.tsx
+│   │       ├── DurationInput.tsx
+│   │       ├── LocationInput.tsx
+│   │       ├── MovieDetails.tsx
+│   │       ├── PosterUpload.tsx
+│   │       ├── SubmitButton.tsx
+│   │       └── WatchDatePicker.tsx
+│   ├── MovieBox.tsx
+│   ├── MovieDataStreamer.tsx
+│   ├── SearchBox.tsx
+│   ├── verify/
+│   │   ├── VerifyAnimatedPosterGrid.tsx
+│   │   └── VerifyOtpCard.tsx
+│   ├── Footer.tsx
+│   └── ToastProvider.tsx
+├── lib/
+│   ├── api-client.ts
+│   ├── auth.ts
+│   ├── cloudinary.ts
+│   └── prisma.ts
+├── node_modules/
+├── prisma/
+│   ├── migrations/
+│   └── schema.prisma
+├── public/
+│   └── vite.svg
+├── .gitignore
+├── eslint.config.mjs
+├── next-env.d.ts
+├── next.config.ts
+├── package.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── postcss.config.mjs
+├── prisma.config.ts
+├── proxy.ts
+├── README.md
+└── tsconfig.json
+```
+
+---
+
+# ⚙️ Installation
+
+Clone repository:
+
+```bash
+git clone https://github.com/merupeshpradhan/CineTrack.git
+```
+
+Move into project:
+
+```bash
+cd CineTrack
+```
+
+Install packages:
+
+```bash
+npm install
+```
+
+Create environment file:
+
+```env
+DATABASE_URL=
+
+EMAIL_USER=
+EMAIL_PASS=
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+ACCESS_TOKEN_SECRET=
+REFRESH_TOKEN_SECRET=
+```
+
+Generate Prisma Client:
+
+```bash
+npx prisma generate
+```
+
+Run development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+# 🔑 Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+| Variable              | Purpose             |
+| --------------------- | ------------------- |
+| DATABASE_URL          | PostgreSQL Database |
+| EMAIL_USER            | Email Sender        |
+| EMAIL_PASS            | Email App Password  |
+| CLOUDINARY_CLOUD_NAME | Cloudinary Cloud    |
+| CLOUDINARY_API_KEY    | Cloudinary Access   |
+| CLOUDINARY_API_SECRET | Cloudinary Secret   |
+| ACCESS_TOKEN_SECRET   | JWT Access Token    |
+| REFRESH_TOKEN_SECRET  | JWT Refresh Token   |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 🔒 Authentication Flow
 
-## Deploy on Vercel
+```text
+Register
+   ↓
+OTP Verification
+   ↓
+Generate Access Token
+   ↓
+Generate Refresh Token
+   ↓
+Store Session
+   ↓
+Dashboard Access
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 📸 Screenshots
+
+* Login Page
+* OTP Verification
+* Dashboard
+* Add Movie
+
+---
+
+# 🧠 Learning Outcomes
+
+This project helped practice:
+
+* Full Stack Development
+* Authentication Flow
+* Session Management
+* File Upload Handling
+* Prisma ORM
+* Database Design
+* API Development
+* Production Deployment
+
+---
+
+# 👨‍💻 Developer
+
+**Rupesh Pradhan**
+
+Built as part of **Chai Aur Code Assignment**
+
+---
+
+# 📄 License
+
+This project is for educational and portfolio purposes.
