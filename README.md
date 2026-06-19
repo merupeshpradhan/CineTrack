@@ -20,7 +20,6 @@ Users can securely create an account, verify identity using OTP, manage authenti
 
 ## 🔐 Authentication System
 
-* User Registration
 * User Login
 * OTP Email Verification
 * JWT Access Token Authentication
